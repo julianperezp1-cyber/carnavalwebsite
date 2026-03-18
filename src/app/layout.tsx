@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import localFont from "next/font/local";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -85,7 +86,9 @@ export default function RootLayout({
         <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
       </head>
       <body className={`${dmSans.variable} ${mokoko.variable} font-sans antialiased`}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

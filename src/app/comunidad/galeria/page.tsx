@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { GaleriaParticipation } from '@/components/auth/GaleriaParticipation';
+import { AuthCtaSection } from '@/components/auth/AuthCtaSection';
 import { Camera, Heart, Filter, UserPlus, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -39,36 +41,7 @@ export default function GaleriaPage() {
       <div className="h-1.5 gradient-carnaval" />
 
       {/* How to participate */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="bg-gradient-to-r from-carnaval-red/5 to-gold/5 rounded-2xl p-8 sm:p-10 border border-carnaval-red/10">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-carnaval-red/10 rounded-xl flex items-center justify-center shrink-0">
-                <Camera className="h-6 w-6 text-carnaval-red" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-display font-black text-brand-dark mb-2">Como participar</h2>
-                <p className="text-gray-500 mb-4 max-w-2xl">
-                  Para subir tus fotos a la galeria comunitaria necesitas un Carnaval ID. Registrate gratis y comparte tus mejores momentos con la comunidad carnavalera.
-                </p>
-                <ul className="text-sm text-gray-500 space-y-1 mb-6">
-                  <li>1. Crea tu Carnaval ID gratuito</li>
-                  <li>2. Sube tus fotos con titulo y categoria</li>
-                  <li>3. La comunidad puede dar like a tus fotos</li>
-                  <li>4. Las mejores fotos se destacan cada mes</li>
-                </ul>
-                <Link
-                  href="/cuenta"
-                  className="inline-flex items-center gap-2 bg-carnaval-red hover:bg-carnaval-red-hover text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-colors"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Crear Carnaval ID
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <GaleriaParticipation />
 
       {/* Filter bar */}
       <section className="bg-gray-50 border-y border-gray-100">
@@ -118,20 +91,13 @@ export default function GaleriaPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 sm:py-20 bg-brand-dark">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-display font-black text-white mb-4">Tus fotos, tu Carnaval</h2>
-          <p className="text-white/50 mb-8 max-w-xl mx-auto">Crea tu Carnaval ID y empieza a compartir tus recuerdos con miles de carnavaleros.</p>
-          <Link
-            href="/cuenta"
-            className="inline-flex items-center gap-2 bg-carnaval-red hover:bg-carnaval-red-hover text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors"
-          >
-            Crear mi Carnaval ID
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+      {/* CTA — only shows if not logged in */}
+      <AuthCtaSection
+        title="Tus fotos, tu Carnaval"
+        description="Crea tu Carnaval ID y empieza a compartir tus recuerdos con miles de carnavaleros."
+        buttonText="Crear mi Carnaval ID"
+        buttonColor="bg-carnaval-red hover:bg-carnaval-red-hover"
+      />
 
       <div className="h-1.5 gradient-carnaval" />
       <Footer />

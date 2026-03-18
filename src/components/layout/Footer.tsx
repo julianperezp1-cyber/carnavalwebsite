@@ -1,13 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone, MapPin, Instagram, Facebook, Twitter, Youtube, Heart, ExternalLink, ShoppingBag, ArrowRight } from 'lucide-react';
 import { SOCIAL_LINKS, ORG_ADDRESS, ORG_PHONE, ORG_EMAIL, ORG_NAME, ORG_NIT, SITE_TAGLINE } from '@/lib/constants';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 export function Footer() {
+  const { user } = useAuth();
+
   return (
     <footer className="bg-brand-dark text-white">
-      {/* Newsletter bar */}
-      <div className="bg-carnaval-red">
+      {/* Newsletter bar — only show if not logged in */}
+      {!user && <div className="bg-carnaval-red">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
             <div className="text-center sm:text-left shrink-0">
@@ -29,7 +34,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">

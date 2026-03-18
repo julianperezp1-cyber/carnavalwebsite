@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { AuthCtaSection } from '@/components/auth/AuthCtaSection';
 import { BookOpen, Play, HelpCircle, Clock, BarChart3, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -133,20 +134,13 @@ export default function AcademiaPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 sm:py-20 bg-brand-dark">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-display font-black text-white mb-4">Empieza a aprender hoy</h2>
-          <p className="text-white/50 mb-8 max-w-xl mx-auto">Con tu Carnaval ID puedes guardar tu progreso, obtener certificados y competir en los quizzes.</p>
-          <Link
-            href="/cuenta"
-            className="inline-flex items-center gap-2 bg-carnaval-green hover:bg-carnaval-green/90 text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors"
-          >
-            Crear Carnaval ID
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+      {/* CTA — only shows if not logged in */}
+      <AuthCtaSection
+        title="Empieza a aprender hoy"
+        description="Con tu Carnaval ID puedes guardar tu progreso, obtener certificados y competir en los quizzes."
+        buttonText="Crear Carnaval ID"
+        buttonColor="bg-carnaval-green hover:bg-carnaval-green/90"
+      />
 
       <div className="h-1.5 gradient-carnaval" />
       <Footer />
