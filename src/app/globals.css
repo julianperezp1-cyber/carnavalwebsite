@@ -2,27 +2,40 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #001113;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* ── Carnaval Brand Colors ── */
+  /* ═══ COLORES OFICIALES BRANDBOOK 2025 ═══ */
+  /* Rojo Carnaval — R:232 G:51 B:49 */
   --color-carnaval-red: #E83331;
-  --color-carnaval-red-hover: #d12a28;
+  --color-carnaval-red-hover: #cc2624;
   --color-carnaval-red-light: #fef2f2;
-  --color-deep-blue: #001B2E;
-  --color-deep-blue-light: #002D4A;
+
+  /* Amarillo/Dorado — R:255 G:206 B:56 */
   --color-gold: #FFCE38;
   --color-gold-hover: #f0c030;
   --color-gold-light: #fffbeb;
-  --color-blue-accent: #0064C8;
-  --color-green-accent: #10B981;
-  --color-carnival-orange: #F97316;
-  --color-carnival-purple: #8B5CF6;
-  --color-carnival-pink: #EC4899;
+
+  /* Verde Carnaval — R:0 G:171 B:37 */
+  --color-carnaval-green: #00AB25;
+  --color-carnaval-green-hover: #009620;
+  --color-carnaval-green-light: #ecfdf5;
+
+  /* Azul Carnaval — R:0 G:100 B:200 */
+  --color-carnaval-blue: #0064C8;
+  --color-carnaval-blue-hover: #0055aa;
+
+  /* Dark/Negro marca — R:0 G:17 B:19 */
+  --color-brand-dark: #001113;
+  --color-brand-dark-light: #0a1f22;
+
+  /* Aliases for convenience */
+  --color-deep-blue: #001113;
+  --color-deep-blue-light: #0a1f22;
 
   /* ── Fonts ── */
   --font-sans: var(--font-dm-sans);
@@ -44,8 +57,8 @@ body {
 
 /* ── Selection color ── */
 ::selection {
-  background-color: #E8333120;
-  color: #001B2E;
+  background-color: #E8333125;
+  color: #001113;
 }
 
 /* ── Custom scrollbar ── */
@@ -63,6 +76,43 @@ body {
   background: #a1a1a1;
 }
 
+/* ═══ BRAND GRADIENTS (from brandbook) ═══ */
+
+/* The iconic carnival gradient: Red → Orange → Yellow → Green */
+.gradient-carnaval {
+  background: linear-gradient(90deg, #E83331 0%, #F97316 25%, #FFCE38 50%, #00AB25 100%);
+}
+
+/* Vertical version (for left sidebar bar decoration) */
+.gradient-carnaval-vertical {
+  background: linear-gradient(180deg, #E83331 0%, #F97316 30%, #FFCE38 55%, #00AB25 100%);
+}
+
+/* Gradient text: Red → Gold (for hero headings) */
+.text-gradient-carnaval {
+  background: linear-gradient(135deg, #E83331 0%, #FFCE38 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient text: Green → Gold (for accent headings) */
+.text-gradient-green {
+  background: linear-gradient(135deg, #00AB25 0%, #FFCE38 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Mesh gradient background (like the brandbook wallpapers) */
+.bg-carnival-mesh {
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(232, 51, 49, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 171, 37, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 206, 56, 0.4) 0%, transparent 60%),
+    #001113;
+}
+
 /* ── Countdown animation ── */
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 0 0 rgba(232, 51, 49, 0.2); }
@@ -72,15 +122,18 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* ── Gradient text ── */
-.text-gradient-carnaval {
-  background: linear-gradient(135deg, #E83331, #FFCE38);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 /* ── Hero overlay gradient ── */
 .hero-gradient {
-  background: linear-gradient(180deg, rgba(0,27,46,0.7) 0%, rgba(0,27,46,0.3) 40%, rgba(0,27,46,0.6) 100%);
+  background: linear-gradient(180deg, rgba(0,17,19,0.7) 0%, rgba(0,17,19,0.3) 40%, rgba(0,17,19,0.6) 100%);
+}
+
+/* ── Decorative left gradient bar (brandbook style) ── */
+.brand-bar-left::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #E83331 0%, #F97316 30%, #FFCE38 55%, #00AB25 100%);
 }

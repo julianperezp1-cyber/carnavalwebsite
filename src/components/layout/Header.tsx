@@ -30,7 +30,7 @@ export function Header() {
   return (
     <>
       {/* Top bar */}
-      <div className="bg-deep-blue text-white/70 text-[11px] hidden lg:block">
+      <div className="bg-brand-dark text-white/70 text-[11px] hidden lg:block">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-8">
           <p className="flex items-center gap-1.5">
             <span className="text-gold font-semibold">🎭</span>
@@ -64,10 +64,10 @@ export function Header() {
                 <span className="text-white font-display font-black text-lg lg:text-xl">C</span>
               </div>
               <div className="hidden sm:block">
-                <p className="text-sm lg:text-base font-black text-deep-blue leading-tight tracking-tight">
+                <p className="text-sm lg:text-base font-black text-brand-dark leading-tight tracking-tight">
                   CARNAVAL
                 </p>
-                <p className="text-[10px] lg:text-xs text-deep-blue/60 font-semibold tracking-widest uppercase">
+                <p className="text-[10px] lg:text-xs text-brand-dark/60 font-semibold tracking-widest uppercase">
                   de Barranquilla
                 </p>
               </div>
@@ -180,7 +180,7 @@ export function Header() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
           <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <p className="text-sm font-bold text-deep-blue">Menu</p>
+              <p className="text-sm font-bold text-brand-dark">Menu</p>
               <button onClick={() => setMobileOpen(false)} className="p-2 rounded-lg hover:bg-gray-100">
                 <X className="h-5 w-5 text-gray-500" />
               </button>

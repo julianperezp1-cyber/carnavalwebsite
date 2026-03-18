@@ -4,7 +4,7 @@ import { SOCIAL_LINKS, ORG_ADDRESS, ORG_PHONE, ORG_EMAIL, ORG_NAME, ORG_NIT, SIT
 
 export function Footer() {
   return (
-    <footer className="bg-deep-blue text-white">
+    <footer className="bg-brand-dark text-white">
       {/* Newsletter bar */}
       <div className="bg-carnaval-red">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
