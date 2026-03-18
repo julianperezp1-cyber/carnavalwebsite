@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { MapPin, Route, Landmark, Eye, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
@@ -256,7 +255,7 @@ export function CarnavalMap() {
   return (
     <div className="relative">
       {/* Map container */}
-      <div ref={mapContainer} className="w-full h-[500px] sm:h-[600px] lg:h-[700px] rounded-2xl overflow-hidden" />
+      <div ref={mapContainer} style={{ width: '100%', height: '700px' }} className="rounded-2xl overflow-hidden" />
 
       {/* Filter pills overlay */}
       <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
