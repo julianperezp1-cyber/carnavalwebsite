@@ -2,25 +2,85 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0a0a0a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* ── Carnaval Brand Colors ── */
+  --color-carnaval-red: #E83331;
+  --color-carnaval-red-hover: #d12a28;
+  --color-carnaval-red-light: #fef2f2;
+  --color-deep-blue: #001B2E;
+  --color-deep-blue-light: #002D4A;
+  --color-gold: #FFCE38;
+  --color-gold-hover: #f0c030;
+  --color-gold-light: #fffbeb;
+  --color-blue-accent: #0064C8;
+  --color-green-accent: #10B981;
+  --color-carnival-orange: #F97316;
+  --color-carnival-purple: #8B5CF6;
+  --color-carnival-pink: #EC4899;
+
+  /* ── Fonts ── */
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-mokoko);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Smooth scrolling ── */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Selection color ── */
+::selection {
+  background-color: #E8333120;
+  color: #001B2E;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* ── Countdown animation ── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 51, 49, 0.2); }
+  50% { box-shadow: 0 0 20px 5px rgba(232, 51, 49, 0.15); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ── Gradient text ── */
+.text-gradient-carnaval {
+  background: linear-gradient(135deg, #E83331, #FFCE38);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Hero overlay gradient ── */
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(0,27,46,0.7) 0%, rgba(0,27,46,0.3) 40%, rgba(0,27,46,0.6) 100%);
 }
