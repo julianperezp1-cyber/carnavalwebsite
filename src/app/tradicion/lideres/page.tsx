@@ -53,7 +53,7 @@ export default function LideresPage() {
 
       {/* Stats */}
       <section className="py-8 bg-brand-dark">
-        <div className="max-w-5xl mx-auto px-6 flex flex-wrap items-center justify-center gap-10">
+        <div className="max-w-5xl mx-auto px-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
           {[
             { icon: Users, value: '18', label: 'Agrupaciones' },
             { icon: Calendar, value: '50+', label: 'Anos minimo' },

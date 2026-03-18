@@ -60,8 +60,8 @@ export default function UnescoPage() {
               { year: '2003', title: 'Proclamacion UNESCO', desc: 'En la segunda proclamacion de Obras Maestras, la UNESCO incluye al Carnaval de Barranquilla en la prestigiosa lista, junto a otras 28 expresiones culturales del mundo.', icon: Award, color: 'border-carnaval-green' },
               { year: '2008', title: 'Lista Representativa', desc: 'El Carnaval es incluido en la Lista Representativa del Patrimonio Cultural Inmaterial de la Humanidad bajo la nueva Convencion de 2003.', icon: Globe, color: 'border-carnaval-blue' },
             ].map((item, i) => (
-              <div key={i} className={`flex items-start gap-6 bg-white rounded-2xl p-6 border-l-4 ${item.color}`}>
-                <div className="w-16 h-16 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
+              <div key={i} className={`flex items-start gap-3 sm:gap-6 bg-white rounded-2xl p-4 sm:p-6 border-l-4 ${item.color}`}>
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
                   <span className="text-lg font-display font-black text-brand-dark">{item.year}</span>
                 </div>
                 <div>
@@ -82,7 +82,7 @@ export default function UnescoPage() {
         <div className="max-w-4xl mx-auto px-6 sm:px-8">
           <Award className="h-10 w-10 text-gold mb-4" />
           <h2 className="text-3xl sm:text-4xl font-display font-black text-white mb-6">Que significa esta declaratoria</h2>
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {[
               { title: 'Reconocimiento mundial', desc: 'El Carnaval es reconocido como una expresion cultural de valor universal excepcional.' },
               { title: 'Compromiso de proteccion', desc: 'Colombia y Barranquilla se comprometen a salvaguardar y transmitir esta tradicion.' },

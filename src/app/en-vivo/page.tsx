@@ -38,7 +38,7 @@ export default function EnVivoPage() {
                 <span className="text-xs font-bold text-carnaval-red uppercase tracking-wider">Livestream</span>
               </div>
               <Video className="h-12 w-12 text-white/20 mb-4" />
-              <h3 className="text-2xl font-display font-black text-white mb-3">Transmisiones en vivo</h3>
+              <h3 className="text-xl sm:text-2xl font-display font-black text-white mb-3">Transmisiones en vivo</h3>
               <p className="text-white/50 text-sm leading-relaxed mb-6">
                 Durante el Carnaval, transmitimos en vivo la Batalla de Flores, la Gran Parada de Tradicion, la Gran Parada de Comparsas y el Festival de Orquestas.
               </p>
@@ -51,7 +51,7 @@ export default function EnVivoPage() {
             {/* Podcast */}
             <Link href="/en-vivo/podcast" className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all group">
               <Headphones className="h-12 w-12 text-carnaval-red/20 mb-4" />
-              <h3 className="text-2xl font-display font-black text-brand-dark mb-3 group-hover:text-carnaval-red transition-colors">Podcast Carnaval</h3>
+              <h3 className="text-xl sm:text-2xl font-display font-black text-brand-dark mb-3 group-hover:text-carnaval-red transition-colors">Podcast Carnaval</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-4">
                 Escucha <strong>Siempre Reinas</strong> y mas contenido exclusivo. Historias, entrevistas, musica y la tradicion del Carnaval en formato podcast.
               </p>
@@ -75,7 +75,7 @@ export default function EnVivoPage() {
             {/* Playlist */}
             <Link href="/en-vivo/playlist" className="bg-carnaval-green/5 rounded-2xl p-8 border border-carnaval-green/10 hover:shadow-xl hover:-translate-y-1 transition-all group">
               <Music className="h-12 w-12 text-carnaval-green/30 mb-4" />
-              <h3 className="text-2xl font-display font-black text-brand-dark mb-3 group-hover:text-carnaval-green transition-colors">Playlist oficial</h3>
+              <h3 className="text-xl sm:text-2xl font-display font-black text-brand-dark mb-3 group-hover:text-carnaval-green transition-colors">Playlist oficial</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-6">
                 La musica del Carnaval en Spotify. Cumbia, salsa, vallenato, champeta y todos los ritmos que hacen vibrar a Barranquilla. Actualizada cada semana.
               </p>
@@ -88,7 +88,7 @@ export default function EnVivoPage() {
             {/* Interactive Map */}
             <Link href="/en-vivo/mapa" className="bg-carnaval-blue/5 rounded-2xl p-8 border border-carnaval-blue/10 hover:shadow-xl hover:-translate-y-1 transition-all group">
               <Map className="h-12 w-12 text-carnaval-blue/30 mb-4" />
-              <h3 className="text-2xl font-display font-black text-brand-dark mb-3 group-hover:text-carnaval-blue transition-colors">Mapa interactivo</h3>
+              <h3 className="text-xl sm:text-2xl font-display font-black text-brand-dark mb-3 group-hover:text-carnaval-blue transition-colors">Mapa interactivo</h3>
               <p className="text-gray-500 text-sm leading-relaxed mb-4">
                 Explora las rutas de los desfiles, ubica los palcos, entradas, y descubre los mejores lugares turisticos de Barranquilla.
               </p>

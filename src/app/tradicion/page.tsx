@@ -108,7 +108,7 @@ export default function TradicionPage() {
       {/* Key pages */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: Users, title: 'Lideres de la Tradicion', desc: '18 agrupaciones con mas de 50 anos preservando las raices culturales del Carnaval.', href: '/tradicion/lideres', color: 'bg-carnaval-green' },
               { icon: Globe, title: 'Declaratoria UNESCO', desc: 'Proclamado Obra Maestra del Patrimonio Oral e Inmaterial de la Humanidad en 2003.', href: '/tradicion/unesco', color: 'bg-carnaval-blue' },

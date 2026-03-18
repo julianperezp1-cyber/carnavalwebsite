@@ -124,8 +124,8 @@ export default function Carnaval2027Page() {
                 <div className="grid lg:grid-cols-3 gap-0">
                   {/* Left: color block with icon */}
                   <div className={`${event.color} p-8 lg:p-10 flex flex-col justify-center`}>
-                    <span className="text-5xl mb-4">{event.icon}</span>
-                    <h3 className="text-2xl sm:text-3xl font-display font-black text-white leading-tight">{event.name}</h3>
+                    <span className="text-4xl sm:text-5xl mb-4">{event.icon}</span>
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-black text-white leading-tight">{event.name}</h3>
                     <div className="mt-4 space-y-2">
                       <p className="flex items-center gap-2 text-white/80 text-sm">
                         <Calendar className="h-4 w-4 shrink-0" />
@@ -145,7 +145,7 @@ export default function Carnaval2027Page() {
                   {/* Right: description + highlights */}
                   <div className="lg:col-span-2 p-8 lg:p-10">
                     <p className="text-gray-600 leading-relaxed mb-6">{event.description}</p>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {event.highlights.map((h, j) => (
                         <div key={j} className="flex items-center gap-2">
                           <Star className="h-4 w-4 text-gold shrink-0" />

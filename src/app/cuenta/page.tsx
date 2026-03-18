@@ -30,8 +30,8 @@ export default function CuentaPage() {
             <span className="text-gray-300 text-xs">/</span>
             <span className="text-xs text-gray-600 font-medium">Carnaval ID</span>
           </nav>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black leading-[0.95] text-brand-dark">Carnaval ID</h1>
-          <p className="mt-3 text-base sm:text-lg max-w-2xl text-gray-500">Tu identidad digital en el Carnaval de Barranquilla. Un solo acceso a todo el ecosistema carnavalero.</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-display font-black leading-[0.95] text-brand-dark">Carnaval ID</h1>
+          <p className="mt-3 text-sm sm:text-base lg:text-lg max-w-2xl text-gray-500">Tu identidad digital en el Carnaval de Barranquilla. Un solo acceso a todo el ecosistema carnavalero.</p>
         </div>
       </section>
       <div className="h-1.5 gradient-carnaval" />

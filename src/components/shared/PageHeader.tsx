@@ -49,11 +49,11 @@ export function PageHeader({ title, subtitle, breadcrumbs, accentColor = 'red', 
           </nav>
         )}
 
-        <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-display font-black leading-[0.95] ${dark ? 'text-white' : 'text-brand-dark'}`}>
+        <h1 className={`text-2xl sm:text-3xl lg:text-5xl font-display font-black leading-[0.95] ${dark ? 'text-white' : 'text-brand-dark'}`}>
           {title}
         </h1>
         {subtitle && (
-          <p className={`mt-3 text-base sm:text-lg max-w-2xl ${dark ? 'text-white/50' : 'text-gray-500'}`}>
+          <p className={`mt-3 text-sm sm:text-base lg:text-lg max-w-2xl ${dark ? 'text-white/50' : 'text-gray-500'}`}>
             {subtitle}
           </p>
         )}

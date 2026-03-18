@@ -42,10 +42,10 @@ export default function MapaPage() {
             <span className="text-xs text-white/20">/</span>
             <span className="text-xs text-white/70 font-medium">Mapa</span>
           </nav>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black text-white leading-[0.95]">
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-display font-black text-white leading-[0.95]">
             Mapa Interactivo
           </h1>
-          <p className="mt-3 text-white/50 max-w-xl">
+          <p className="mt-3 text-sm sm:text-base text-white/50 max-w-xl">
             Explora Barranquilla en 3D. Rutas de desfiles, palcos oficiales y los mejores lugares de la ciudad.
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function MapaPage() {
       <section className="py-8 sm:py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <CarnavalMap />
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-[11px] text-gray-400">
+          <div className="mt-4 flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-gray-400">
             <span>🖱️ Arrastra para mover</span>
             <span>🔍 Scroll para zoom</span>
             <span>⌥ + arrastrar para rotar 3D</span>
@@ -69,7 +69,7 @@ export default function MapaPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-xs font-bold text-carnaval-red uppercase tracking-[0.2em] mb-2">Rutas de desfiles</p>
           <h2 className="text-2xl sm:text-3xl font-display font-black text-brand-dark mb-8">Recorridos oficiales</h2>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {ROUTE_SECTIONS.map((route, i) => (
               <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                 <div className="flex items-center gap-3 mb-3">

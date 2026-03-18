@@ -81,7 +81,7 @@ export default function HomePage() {
                   <p className="text-[10px] text-gold font-bold uppercase tracking-[0.2em] mb-1">Faltan</p>
                   <p className="text-sm text-white/50">6 — 9 de febrero, {NEXT_CARNIVAL.year}</p>
                 </div>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-4 gap-2 sm:gap-3">
                   {[
                     { value: countdown.days, label: 'Dias' },
                     { value: countdown.hours, label: 'Hrs' },
@@ -89,8 +89,8 @@ export default function HomePage() {
                     { value: countdown.seconds, label: 'Seg' },
                   ].map((u) => (
                     <div key={u.label} className="text-center">
-                      <div className="bg-white/10 rounded-xl py-3 border border-white/10">
-                        <p className="text-2xl sm:text-3xl font-display font-black text-white tabular-nums">
+                      <div className="bg-white/10 rounded-xl py-2 sm:py-3 border border-white/10">
+                        <p className="text-xl sm:text-2xl md:text-3xl font-display font-black text-white tabular-nums">
                           {String(u.value).padStart(2, '0')}
                         </p>
                       </div>
@@ -110,7 +110,7 @@ export default function HomePage() {
       {/* ═══ 2. QUICK ACCESS BAR — App-style icons ═══ */}
       <section className="py-8 sm:py-10 bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-5 gap-4 sm:gap-8">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-8">
             {[
               { icon: Ticket, label: 'Boletas', href: 'https://mercado.carnavaldebarranquilla.org', color: 'bg-carnaval-red', external: true },
               { icon: CalendarDays, label: 'Programacion', href: '/carnaval-2027', color: 'bg-carnaval-green' },
@@ -123,8 +123,8 @@ export default function HomePage() {
               return (
                 <El key={item.label} href={item.href} {...extraProps as any}
                   className="flex flex-col items-center gap-2 group cursor-pointer">
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 ${item.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 group-hover:shadow-xl transition-all`}>
-                    <item.icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 ${item.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 group-hover:shadow-xl transition-all`}>
+                    <item.icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
                   </div>
                   <span className="text-[11px] sm:text-xs font-bold text-gray-600 group-hover:text-brand-dark transition-colors">{item.label}</span>
                 </El>
@@ -191,7 +191,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {NEXT_CARNIVAL.events.map((ev, i) => (
-              <Link key={i} href="/carnaval-2027" className="group relative overflow-hidden rounded-2xl aspect-[3/4]">
+              <Link key={i} href="/carnaval-2027" className="group relative overflow-hidden rounded-2xl aspect-[4/3] sm:aspect-[3/4]">
                 {/* Placeholder — will be real photos */}
                 <div className={`absolute inset-0 ${
                   i === 0 ? 'bg-carnaval-red' : i === 1 ? 'bg-carnaval-green' : i === 2 ? 'bg-gold' : 'bg-carnaval-blue'
@@ -323,11 +323,11 @@ export default function HomePage() {
       {/* ═══ 8. QUICK FACTS ═══ */}
       <section className="py-12 bg-brand-dark">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {QUICK_FACTS.map((f, i) => (
               <div key={i} className="text-center">
-                <p className="text-3xl sm:text-4xl font-display font-black text-gold">{f.number}</p>
-                <p className="text-[11px] text-white/40 font-medium mt-1">{f.label}</p>
+                <p className="text-2xl sm:text-3xl md:text-4xl font-display font-black text-gold">{f.number}</p>
+                <p className="text-[10px] sm:text-[11px] text-white/40 font-medium mt-1">{f.label}</p>
               </div>
             ))}
           </div>

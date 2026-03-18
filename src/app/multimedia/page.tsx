@@ -121,15 +121,15 @@ export default function MultimediaPage() {
           </div>
           <div className="space-y-3">
             {PUBLICATIONS.map((pub, i) => (
-              <div key={i} className="bg-gray-50 rounded-xl p-5 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="h-5 w-5 text-gold" />
-                  <div>
-                    <h4 className="text-sm font-display font-black text-brand-dark">{pub.title}</h4>
-                    <p className="text-xs text-gray-400">{pub.desc}</p>
+              <div key={i} className="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 min-w-0">
+                  <BookOpen className="h-5 w-5 text-gold shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-display font-black text-brand-dark truncate">{pub.title}</h4>
+                    <p className="text-xs text-gray-400 line-clamp-1">{pub.desc}</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-gray-400 bg-gray-200/50 px-2 py-0.5 rounded-full shrink-0">{pub.year}</span>
+                <span className="text-xs font-bold text-gray-400 bg-gray-200/50 px-2 py-0.5 rounded-full shrink-0 self-start sm:self-auto">{pub.year}</span>
               </div>
             ))}
           </div>
@@ -147,13 +147,13 @@ export default function MultimediaPage() {
             <h2 className="text-3xl sm:text-4xl font-display font-black text-brand-dark">Media Kit</h2>
             <p className="text-gray-500 mt-2">Recursos para medios de comunicacion y prensa.</p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {MEDIA_KIT_ITEMS.map((item, i) => (
-              <div key={i} className="bg-white rounded-xl p-5 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <Download className="h-5 w-5 text-carnaval-blue" />
-                  <div>
-                    <h4 className="text-sm font-display font-black text-brand-dark">{item.name}</h4>
+              <div key={i} className="bg-white rounded-xl p-4 sm:p-5 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Download className="h-5 w-5 text-carnaval-blue shrink-0" />
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-display font-black text-brand-dark truncate">{item.name}</h4>
                     <span className="text-xs text-gray-400">{item.size}</span>
                   </div>
                 </div>

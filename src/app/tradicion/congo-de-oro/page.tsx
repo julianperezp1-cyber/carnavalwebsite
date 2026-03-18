@@ -60,7 +60,7 @@ export default function CongoDeOroPage() {
       <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <h2 className="text-2xl sm:text-3xl font-display font-black text-brand-dark mb-10">Niveles de reconocimiento</h2>
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {RECOGNITION_LEVELS.map((level, i) => (
               <div key={i} className={`${level.color} rounded-2xl p-8 text-center`}>
                 <level.icon className={`h-12 w-12 mx-auto mb-4 ${level.textColor}`} />

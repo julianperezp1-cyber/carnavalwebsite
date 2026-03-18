@@ -56,7 +56,7 @@ export default function NoticiasPage() {
                   <div className="w-full h-full bg-gradient-to-br from-carnaval-red/20 to-gold/20 group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <span className="text-[10px] font-bold text-carnaval-red uppercase tracking-wider">{featured[0].tag}</span>
-                <h2 className="text-2xl sm:text-3xl font-display font-black text-brand-dark mt-1 mb-2 group-hover:text-carnaval-red transition-colors leading-tight">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-black text-brand-dark mt-1 mb-2 group-hover:text-carnaval-red transition-colors leading-tight">
                   {featured[0].title}
                 </h2>
                 <p className="text-sm text-gray-500 leading-relaxed mb-3">{featured[0].excerpt}</p>

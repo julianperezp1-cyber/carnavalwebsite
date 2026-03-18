@@ -95,7 +95,7 @@ export default function SomosPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-xs font-bold text-gold uppercase tracking-[0.2em] mb-3">Atributos de marca</p>
           <h2 className="text-2xl sm:text-3xl font-display font-black text-white mb-10">Lo que representamos</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { title: 'Alegria y orgullo', desc: 'El Carnaval como expresion identitaria.' },
               { title: 'Innovacion cultural', desc: 'Un patrimonio vivo y en evolucion.' },
@@ -140,7 +140,7 @@ export default function SomosPage() {
       {/* Company data */}
       <section className="py-12 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-400">
             <span className="font-medium">{ORG_NAME}</span>
             <span>NIT: {ORG_NIT}</span>
             <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {ORG_ADDRESS}</span>

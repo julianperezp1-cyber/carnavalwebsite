@@ -47,7 +47,7 @@ export default function ConvocatoriasPage() {
                         {conv.category}
                       </span>
                     </div>
-                    <h3 className="text-xl font-display font-black text-brand-dark mb-2">{conv.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-display font-black text-brand-dark mb-2">{conv.title}</h3>
                     <p className="text-sm text-gray-500 leading-relaxed mb-3">{conv.desc}</p>
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
                       <Clock className="h-3.5 w-3.5" />

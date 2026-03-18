@@ -39,10 +39,10 @@ export default function ComunidadPage() {
                   <Sparkles className="h-3.5 w-3.5 text-carnaval-red" />
                   <span className="text-xs font-bold text-carnaval-red">Nuevo</span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-display font-black text-white mb-4 leading-[0.95]">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-black text-white mb-4 leading-[0.95]">
                   Carnaval ID
                 </h2>
-                <p className="text-white/60 text-base leading-relaxed mb-6">
+                <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6">
                   Tu identidad carnavalera digital. Crea tu perfil, gana insignias por asistir a eventos, sube tus fotos, conecta con otros carnavaleros y mucho mas.
                 </p>
                 <ul className="space-y-3 mb-8">

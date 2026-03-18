@@ -175,7 +175,7 @@ export function Footer() {
             <p className="text-[11px] text-white/30 text-center sm:text-left">
               &copy; {new Date().getFullYear()} {ORG_NAME} — NIT {ORG_NIT}. Todos los derechos reservados.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 sm:gap-4">
               <Link href="/politica-de-datos" className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
                 Politica de datos
               </Link>
