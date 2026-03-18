@@ -40,13 +40,24 @@ export default function HomePage() {
       <Header />
 
       {/* ═══════════════════════════════════════
-          HERO — Brand dark + carnival mesh bg
+          HERO — Video background
       ═══════════════════════════════════════ */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-brand-dark">
-        {/* Carnival mesh gradient background (brandbook style) */}
-        <div className="absolute inset-0 bg-carnival-mesh opacity-80" />
-        {/* Subtle dot pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+        {/* Video background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          poster="/images/logo-vertical.png"
+        >
+          <source src="/videos/hero-carnaval.mp4" type="video/mp4" />
+        </video>
+        {/* Dark overlay for text legibility */}
+        <div className="absolute inset-0 bg-brand-dark/60" />
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-brand-dark/90 to-transparent" />
 
         {/* Gradient bar left (brandbook signature element) */}
         <div className="absolute left-0 top-0 bottom-0 w-1.5 sm:w-2 gradient-carnaval-vertical z-10" />
@@ -55,29 +66,29 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left — Text content */}
             <div>
-              <div className="inline-flex items-center gap-2 bg-white/8 backdrop-blur-sm rounded-full px-4 py-1.5 mb-8 border border-white/10">
+              <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-full px-4 py-1.5 mb-8 border border-white/15">
                 <Globe className="h-3.5 w-3.5 text-gold" />
-                <span className="text-xs text-white/70 font-medium">Patrimonio Cultural Inmaterial de la Humanidad — UNESCO</span>
+                <span className="text-xs text-white/80 font-medium">Patrimonio Cultural Inmaterial de la Humanidad — UNESCO</span>
               </div>
 
               <h1 className="font-display font-black leading-[0.9] mb-6">
                 <span className="text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl block">Carnaval</span>
-                <span className="text-gradient-carnaval text-4xl sm:text-5xl lg:text-6xl xl:text-7xl block">de Barranquilla</span>
+                <span className="text-gold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl block">de Barranquilla</span>
               </h1>
 
-              <p className="text-lg sm:text-xl text-white/50 max-w-lg mb-10 leading-relaxed font-light">
+              <p className="text-lg sm:text-xl text-white/70 max-w-lg mb-10 leading-relaxed">
                 Quien lo vive es quien lo goza.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start gap-3">
                 <Link href="/carnaval-2027"
-                  className="inline-flex items-center gap-2.5 bg-carnaval-red hover:bg-carnaval-red-hover text-white px-8 py-4 rounded-xl text-sm font-bold transition-all shadow-lg shadow-carnaval-red/25 hover:shadow-xl hover:-translate-y-0.5">
-                  <Calendar className="h-4.5 w-4.5" />
+                  className="inline-flex items-center gap-2.5 bg-carnaval-red hover:bg-carnaval-red-hover text-white px-8 py-4 rounded-xl text-sm font-bold transition-all shadow-lg shadow-black/30 hover:shadow-xl hover:-translate-y-0.5">
+                  <Calendar className="h-4 w-4" />
                   Carnaval {NEXT_CARNIVAL.year}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/tradicion"
-                  className="inline-flex items-center gap-2.5 bg-white/8 hover:bg-white/12 backdrop-blur-sm text-white px-8 py-4 rounded-xl text-sm font-semibold border border-white/10 transition-all">
+                  className="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl text-sm font-semibold border border-white/20 transition-all">
                   <Play className="h-4 w-4" />
                   Descubre la tradicion
                 </Link>
@@ -86,7 +97,7 @@ export default function HomePage() {
 
             {/* Right — Countdown card */}
             <div className="flex justify-center lg:justify-end">
-              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8 w-full max-w-md relative overflow-hidden">
+              <div className="bg-black/40 backdrop-blur-xl rounded-2xl border border-white/15 p-8 w-full max-w-md relative overflow-hidden">
                 {/* Mini gradient bar top */}
                 <div className="absolute top-0 left-0 right-0 h-1 gradient-carnaval" />
 
@@ -95,7 +106,7 @@ export default function HomePage() {
                   <h2 className="text-2xl sm:text-3xl font-display font-black text-white">
                     Carnaval {NEXT_CARNIVAL.year}
                   </h2>
-                  <p className="text-sm text-white/40 mt-1">6 — 9 de febrero</p>
+                  <p className="text-sm text-white/50 mt-1">6 — 9 de febrero</p>
                 </div>
 
                 <div className="grid grid-cols-4 gap-3">
@@ -106,12 +117,12 @@ export default function HomePage() {
                     { value: countdown.seconds, label: 'Seg' },
                   ].map((u) => (
                     <div key={u.label} className="text-center">
-                      <div className="bg-white/8 rounded-xl py-4 border border-white/5">
+                      <div className="bg-white/10 rounded-xl py-4 border border-white/10">
                         <p className="text-3xl sm:text-4xl font-display font-black text-white tabular-nums">
                           {String(u.value).padStart(2, '0')}
                         </p>
                       </div>
-                      <p className="text-[9px] text-white/30 font-semibold mt-2 uppercase tracking-widest">{u.label}</p>
+                      <p className="text-[9px] text-white/40 font-semibold mt-2 uppercase tracking-widest">{u.label}</p>
                     </div>
                   ))}
                 </div>
