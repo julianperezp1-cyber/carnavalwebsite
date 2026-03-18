@@ -88,9 +88,9 @@ body {
   background: linear-gradient(180deg, #E83331 0%, #F97316 30%, #FFCE38 55%, #00AB25 100%);
 }
 
-/* Gradient text: Red → Gold (for hero headings) */
+/* Gradient text: matches the brandbook banner gradient on text (Red → Orange → Yellow) */
 .text-gradient-carnaval {
-  background: linear-gradient(135deg, #E83331 0%, #FFCE38 100%);
+  background: linear-gradient(180deg, #E83331 0%, #F05A22 35%, #FFCE38 70%, #8BC53F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -104,14 +104,25 @@ body {
   background-clip: text;
 }
 
-/* Mesh gradient background (like the brandbook wallpapers — soft organic blobs) */
+/* Mesh gradient background — vivid brandbook style (bright saturated blobs on dark) */
 .bg-carnival-mesh {
   background:
-    radial-gradient(ellipse at 15% 75%, rgba(232, 51, 49, 0.45) 0%, transparent 45%),
-    radial-gradient(ellipse at 40% 90%, rgba(249, 115, 22, 0.3) 0%, transparent 40%),
-    radial-gradient(ellipse at 55% 60%, rgba(255, 206, 56, 0.25) 0%, transparent 45%),
-    radial-gradient(ellipse at 75% 30%, rgba(0, 171, 37, 0.35) 0%, transparent 45%),
-    radial-gradient(ellipse at 90% 70%, rgba(0, 100, 200, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse 80% 80% at 10% 85%, rgba(232, 51, 49, 0.7) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 70% at 30% 70%, rgba(240, 90, 34, 0.5) 0%, transparent 45%),
+    radial-gradient(ellipse 80% 80% at 50% 50%, rgba(255, 206, 56, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse 90% 90% at 80% 25%, rgba(0, 171, 37, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 95% 60%, rgba(0, 100, 200, 0.3) 0%, transparent 40%),
+    #001113;
+}
+
+/* Brighter version for sections that need more color pop */
+.bg-carnival-mesh-vivid {
+  background:
+    radial-gradient(ellipse 90% 90% at 5% 90%, #E83331 0%, transparent 45%),
+    radial-gradient(ellipse 80% 80% at 35% 80%, #F05A22 0%, transparent 40%),
+    radial-gradient(ellipse 90% 90% at 55% 45%, #FFCE38 0%, transparent 45%),
+    radial-gradient(ellipse 100% 100% at 85% 15%, #00AB25 0%, transparent 45%),
+    radial-gradient(ellipse 60% 60% at 100% 70%, #0064C8 0%, transparent 40%),
     #001113;
 }
 
