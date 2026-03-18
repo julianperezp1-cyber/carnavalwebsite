@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X, ChevronDown, Search, ShoppingBag, User, ExternalLink } from 'lucide-react';
 import { NAV_ITEMS, SOCIAL_LINKS, SITE_TAGLINE } from '@/lib/constants';
 
@@ -58,19 +59,16 @@ export function Header() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16 lg:h-[72px]">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 shrink-0">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-carnaval-red rounded-lg flex items-center justify-center">
-                <span className="text-white font-display font-black text-lg lg:text-xl">C</span>
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm lg:text-base font-black text-brand-dark leading-tight tracking-tight">
-                  CARNAVAL
-                </p>
-                <p className="text-[10px] lg:text-xs text-brand-dark/60 font-semibold tracking-widest uppercase">
-                  de Barranquilla
-                </p>
-              </div>
+            {/* Logo - Official Torito horizontal */}
+            <Link href="/" className="shrink-0">
+              <Image
+                src="/images/logo-horizontal.png"
+                alt="Carnaval de Barranquilla"
+                width={220}
+                height={50}
+                className="h-10 lg:h-12 w-auto"
+                priority
+              />
             </Link>
 
             {/* Desktop Nav */}

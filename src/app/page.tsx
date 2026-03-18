@@ -6,7 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { NEXT_CARNIVAL, QUICK_FACTS, SPONSORS } from '@/lib/constants';
 import {
-  Calendar, ChevronRight, Play, ArrowRight, Globe, Award,
+  Calendar, Play, ArrowRight, Globe, Award,
   Music, Users, Camera, Newspaper, ShoppingBag,
   BookOpen, Mic2, Trophy, Heart, ExternalLink,
 } from 'lucide-react';
@@ -61,8 +61,8 @@ export default function HomePage() {
               </div>
 
               <h1 className="font-display font-black leading-[0.9] mb-6">
-                <span className="text-white text-5xl sm:text-6xl lg:text-7xl xl:text-8xl block">Carnaval</span>
-                <span className="text-gradient-carnaval text-5xl sm:text-6xl lg:text-7xl xl:text-8xl block">de Barranquilla</span>
+                <span className="text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl block">Carnaval</span>
+                <span className="text-gradient-carnaval text-4xl sm:text-5xl lg:text-6xl xl:text-7xl block">de Barranquilla</span>
               </h1>
 
               <p className="text-lg sm:text-xl text-white/50 max-w-lg mb-10 leading-relaxed font-light">
@@ -98,7 +98,7 @@ export default function HomePage() {
                   <p className="text-sm text-white/40 mt-1">6 — 9 de febrero</p>
                 </div>
 
-                <div className="grid grid-cols-4 gap-3 mb-8">
+                <div className="grid grid-cols-4 gap-3">
                   {[
                     { value: countdown.days, label: 'Dias' },
                     { value: countdown.hours, label: 'Horas' },
@@ -106,25 +106,12 @@ export default function HomePage() {
                     { value: countdown.seconds, label: 'Seg' },
                   ].map((u) => (
                     <div key={u.label} className="text-center">
-                      <div className="bg-white/8 rounded-xl py-3 border border-white/5">
+                      <div className="bg-white/8 rounded-xl py-4 border border-white/5">
                         <p className="text-3xl sm:text-4xl font-display font-black text-white tabular-nums">
                           {String(u.value).padStart(2, '0')}
                         </p>
                       </div>
                       <p className="text-[9px] text-white/30 font-semibold mt-2 uppercase tracking-widest">{u.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="space-y-2">
-                  {NEXT_CARNIVAL.events.map((ev, i) => (
-                    <div key={i} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-3 border border-white/5 hover:bg-white/8 transition-colors cursor-pointer">
-                      <span className="text-lg">{ev.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white">{ev.name}</p>
-                        <p className="text-[11px] text-white/35">{ev.date}</p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-white/15" />
                     </div>
                   ))}
                 </div>

@@ -104,12 +104,14 @@ body {
   background-clip: text;
 }
 
-/* Mesh gradient background (like the brandbook wallpapers) */
+/* Mesh gradient background (like the brandbook wallpapers — soft organic blobs) */
 .bg-carnival-mesh {
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(232, 51, 49, 0.6) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 171, 37, 0.5) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(255, 206, 56, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 15% 75%, rgba(232, 51, 49, 0.45) 0%, transparent 45%),
+    radial-gradient(ellipse at 40% 90%, rgba(249, 115, 22, 0.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 55% 60%, rgba(255, 206, 56, 0.25) 0%, transparent 45%),
+    radial-gradient(ellipse at 75% 30%, rgba(0, 171, 37, 0.35) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 70%, rgba(0, 100, 200, 0.2) 0%, transparent 40%),
     #001113;
 }
 

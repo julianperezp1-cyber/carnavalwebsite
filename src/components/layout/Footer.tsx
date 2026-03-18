@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Phone, MapPin, Instagram, Facebook, Twitter, Youtube, Heart, ExternalLink, ShoppingBag, ArrowRight } from 'lucide-react';
 import { SOCIAL_LINKS, ORG_ADDRESS, ORG_PHONE, ORG_EMAIL, ORG_NAME, ORG_NIT, SITE_TAGLINE } from '@/lib/constants';
 
@@ -35,14 +36,14 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-carnaval-red rounded-lg flex items-center justify-center">
-                <span className="text-white font-display font-black text-lg">C</span>
-              </div>
-              <div>
-                <p className="text-sm font-black text-white leading-tight">CARNAVAL</p>
-                <p className="text-[9px] text-white/50 font-semibold tracking-widest uppercase">de Barranquilla</p>
-              </div>
+            <Link href="/" className="inline-block mb-4">
+              <Image
+                src="/images/logo-vertical-sm.png"
+                alt="Carnaval de Barranquilla"
+                width={160}
+                height={100}
+                className="h-20 w-auto brightness-0 invert"
+              />
             </Link>
             <p className="text-xs text-white/50 mb-4 leading-relaxed">
               {SITE_TAGLINE}. La fiesta mas grande de Colombia y una de las celebraciones culturales mas importantes del mundo.
