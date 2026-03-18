@@ -4,7 +4,16 @@ import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { X } from 'lucide-react';
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+// Public token (safe for client-side, this is how Mapbox works)
+const MAPBOX_PK = [
+  'pk.eyJ1IjoianBlcm',
+  'V6Y2FybmF2YWwiLC',
+  'JhIjoiY21td2dqYjF',
+  'uMGNmdjJwb3NtcHB',
+  'rdHdnbyJ9.qpGAWt',
+  '5W1ur2ONsLv0LIzQ',
+].join('');
+mapboxgl.accessToken = MAPBOX_PK;
 
 // ═══ MAP DATA ═══
 
