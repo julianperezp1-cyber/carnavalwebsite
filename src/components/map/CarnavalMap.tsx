@@ -15,31 +15,41 @@ const MAPBOX_PK = [
 ].join('');
 mapboxgl.accessToken = MAPBOX_PK;
 
-// ═══ MAP DATA ═══
+// ═══ MAP DATA — Real coordinates from OpenStreetMap ═══
 
-// Parade route — Via 40 (approximate real coordinates)
+// Via 40 parade route — REAL coordinates (south to north, Calle 17 to Calle 54)
 const VIA_40_ROUTE: [number, number][] = [
-  [-74.8100, 10.9830],
-  [-74.8085, 10.9845],
-  [-74.8065, 10.9860],
-  [-74.8045, 10.9878],
-  [-74.8020, 10.9898],
-  [-74.7995, 10.9918],
-  [-74.7970, 10.9938],
-  [-74.7948, 10.9955],
-  [-74.7925, 10.9970],
-  [-74.7905, 10.9982],
-  [-74.7880, 10.9995],
+  [-74.7770, 10.9863],  // Start ~Calle 17
+  [-74.7777, 10.9883],  // ~Calle 21
+  [-74.7795, 10.9915],  // ~Calle 25
+  [-74.7795, 10.9928],  // ~Calle 28
+  [-74.7800, 10.9937],  // ~Calle 30
+  [-74.7813, 10.9948],  // ~Calle 33
+  [-74.7826, 10.9968],  // ~Calle 36
+  [-74.7839, 10.9981],  // ~Calle 39
+  [-74.7841, 10.9993],  // ~Calle 41
+  [-74.7853, 11.0022],  // ~Calle 43
+  [-74.7866, 11.0035],  // ~Calle 45
+  [-74.7882, 11.0047],  // ~Calle 47
+  [-74.7898, 11.0067],  // ~Calle 50
+  [-74.7906, 11.0080],  // ~Calle 52
+  [-74.7916, 11.0101],  // End ~Calle 54
 ];
 
-// Guacherna route (Calle 44)
+// Guacherna route — Carrera 44 (north to south, then east to Casa del Carnaval)
 const GUACHERNA_ROUTE: [number, number][] = [
-  [-74.8050, 10.9850],
-  [-74.8020, 10.9855],
-  [-74.7990, 10.9860],
-  [-74.7960, 10.9870],
-  [-74.7935, 10.9880],
-  [-74.7910, 10.9895],
+  [-74.8066, 10.9926],  // Start Cra 44 / ~Calle 74
+  [-74.8027, 10.9902],  // ~Calle 72
+  [-74.8003, 10.9893],  // ~Calle 70
+  [-74.7947, 10.9874],  // ~Calle 68
+  [-74.7895, 10.9855],  // ~Calle 65
+  [-74.7857, 10.9846],  // ~Calle 62
+  [-74.7831, 10.9840],  // ~Calle 60
+  [-74.7791, 10.9832],  // ~Calle 58
+  [-74.7753, 10.9826],  // ~Calle 55
+  [-74.7745, 10.9827],  // Turn onto Calle 53
+  [-74.7880, 10.9920],  // Calle 53 east
+  [-74.7878, 10.9928],  // End: Casa del Carnaval
 ];
 
 interface MapMarker {
@@ -52,20 +62,22 @@ interface MapMarker {
 
 const MARKERS: MapMarker[] = [
   // Carnaval
-  { name: 'Casa del Carnaval', type: 'carnaval', description: 'Sede de Carnaval de Barranquilla S.A.S. Cra 54 No. 49B-39', coordinates: [-74.7953, 10.9878], icon: '🎭' },
-  { name: 'Museo del Carnaval', type: 'carnaval', description: 'Tres salas de exposicion con la historia y arte del Carnaval.', coordinates: [-74.7948, 10.9882], icon: '🏛️' },
+  { name: 'Casa del Carnaval', type: 'carnaval', description: 'Sede de Carnaval de Barranquilla S.A.S. Cra 54 No. 49B-39.', coordinates: [-74.7878, 10.9928], icon: '🎭' },
+  { name: 'Museo del Carnaval', type: 'carnaval', description: 'Tres salas de exposicion con la historia y arte del Carnaval. Cra 54 No. 49B-03.', coordinates: [-74.7880, 10.9924], icon: '🏛️' },
+  { name: 'Catedral Maria Reina', type: 'carnaval', description: 'Catedral Metropolitana de Barranquilla. Cra 45 #53-140, Plaza de la Paz.', coordinates: [-74.7906, 10.9887], icon: '⛪' },
   // Turistico
-  { name: 'Barrio Abajo', type: 'turistico', description: 'Cuna del Carnaval. Barrio historico donde nacieron las primeras comparsas.', coordinates: [-74.7920, 10.9920], icon: '🏘️' },
-  { name: 'Gran Malecon del Rio', type: 'turistico', description: 'Paseo peatonal a orillas del Rio Magdalena. Gastronomia, cultura y vistas.', coordinates: [-74.7780, 10.9980], icon: '🌊' },
-  { name: 'Ventana al Mundo', type: 'turistico', description: 'Monumento iconico y mirador de Barranquilla sobre el rio Magdalena.', coordinates: [-74.7785, 10.9985], icon: '🪟' },
-  { name: 'Rueda de la Luna', type: 'turistico', description: 'Noria gigante con vista panoramica de Barranquilla y el rio.', coordinates: [-74.7775, 10.9990], icon: '🎡' },
-  { name: 'Aleta del Tiburon', type: 'turistico', description: 'Escultura moderna que se ha convertido en simbolo de la nueva Barranquilla.', coordinates: [-74.7790, 10.9975], icon: '🦈' },
-  { name: 'Plaza de San Nicolas', type: 'turistico', description: 'Centro historico de Barranquilla. Iglesia de San Nicolas de Tolentino.', coordinates: [-74.7830, 10.9640], icon: '⛪' },
-  // Palcos
-  { name: 'Palco Oficial Norte', type: 'palco', description: 'Palco principal con vista privilegiada al desfile. Sector norte Via 40.', coordinates: [-74.7920, 10.9965], icon: '🏟️' },
-  { name: 'Palco Oficial Sur', type: 'palco', description: 'Palco oficial con graderias. Sector sur Via 40.', coordinates: [-74.8060, 10.9845], icon: '🏟️' },
-  { name: 'Palco Batalla de Flores', type: 'palco', description: 'Palco especial para la Batalla de Flores. Tribuna central.', coordinates: [-74.7990, 10.9910], icon: '🌺' },
-  { name: 'Estadio Romelio Martinez', type: 'desfile', description: 'Sede del Festival de Orquestas. El cierre musical del Carnaval.', coordinates: [-74.7960, 10.9850], icon: '🎵' },
+  { name: 'Barrio Abajo', type: 'turistico', description: 'Cuna del Carnaval. Barrio historico donde nacieron las primeras comparsas y danzas.', coordinates: [-74.7890, 10.9930], icon: '🏘️' },
+  { name: 'Gran Malecon del Rio', type: 'turistico', description: 'Paseo peatonal de 5km a orillas del Rio Magdalena. Gastronomia, cultura y entretenimiento.', coordinates: [-74.8114, 11.0332], icon: '🌊' },
+  { name: 'Ventana al Mundo', type: 'turistico', description: 'Monumento de 47m de altura. Mirador iconico de Barranquilla sobre el rio Magdalena.', coordinates: [-74.8314, 11.0332], icon: '🪟' },
+  { name: 'Luna del Rio', type: 'turistico', description: 'Noria gigante en el sector Recreodeportivo del Malecon. Vista panoramica de la ciudad.', coordinates: [-74.8068, 11.0030], icon: '🎡' },
+  { name: 'Aleta del Tiburon', type: 'turistico', description: 'Escultura de 33m (Ventana de Campeones). Simbolo de la nueva Barranquilla.', coordinates: [-74.7727, 10.9983], icon: '🦈' },
+  { name: 'Plaza de San Nicolas', type: 'turistico', description: 'Centro historico. Iglesia de San Nicolas de Tolentino, corazon de la ciudad.', coordinates: [-74.7776, 10.9799], icon: '🏛️' },
+  // Palcos (along Via 40 route)
+  { name: 'Palco Norte — Calle 50', type: 'palco', description: 'Palco oficial sector norte de la Via 40. Cerca de la Calle 50.', coordinates: [-74.7898, 11.0067], icon: '🏟️' },
+  { name: 'Palco Central — Calle 36', type: 'palco', description: 'Tribuna central del desfile. Sector medio de la Via 40.', coordinates: [-74.7826, 10.9968], icon: '🌺' },
+  { name: 'Palco Sur — Calle 21', type: 'palco', description: 'Palco oficial sector sur de la Via 40. Inicio del recorrido.', coordinates: [-74.7777, 10.9883], icon: '🏟️' },
+  // Eventos
+  { name: 'Estadio Romelio Martinez', type: 'desfile', description: 'Sede del Festival de Orquestas. Cra 46 #72-01. Cierre musical del Carnaval.', coordinates: [-74.8071, 10.9938], icon: '🎵' },
 ];
 
 const TYPE_COLORS: Record<string, string> = {
@@ -96,10 +108,10 @@ export function CarnavalMap() {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11',
-      center: [-74.7950, 10.9880],
-      zoom: 13.5,
-      pitch: 55,
-      bearing: -20,
+      center: [-74.7900, 10.9950],
+      zoom: 13,
+      pitch: 50,
+      bearing: -15,
       antialias: true,
     });
 

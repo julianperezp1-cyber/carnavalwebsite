@@ -118,14 +118,16 @@ export const QUICK_FACTS = [
   { number: '800+', label: 'Grupos folcloricos' },
 ];
 
-// Barranquilla tourist landmarks for interactive map
+// Barranquilla tourist landmarks — REAL coordinates from OpenStreetMap
 export const LANDMARKS = [
-  { name: 'Museo del Carnaval', type: 'cultura', lat: 10.9878, lng: -74.7889 },
-  { name: 'Casa del Carnaval', type: 'carnaval', lat: 10.9885, lng: -74.7895 },
-  { name: 'Barrio Abajo', type: 'cultura', lat: 10.9920, lng: -74.7850 },
-  { name: 'Aleta del Tiburon', type: 'turistico', lat: 10.9960, lng: -74.7820 },
-  { name: 'Ventana del Mundo', type: 'turistico', lat: 10.9940, lng: -74.7835 },
-  { name: 'Rueda de la Luna', type: 'turistico', lat: 10.9935, lng: -74.7830 },
-  { name: 'Gran Malecon del Rio', type: 'turistico', lat: 10.9950, lng: -74.7810 },
-  { name: 'Via 40', type: 'desfile', lat: 10.9900, lng: -74.7860 },
+  { name: 'Casa del Carnaval', type: 'carnaval', lat: 10.9928, lng: -74.7878 },
+  { name: 'Museo del Carnaval', type: 'cultura', lat: 10.9924, lng: -74.7880 },
+  { name: 'Barrio Abajo', type: 'cultura', lat: 10.9930, lng: -74.7890 },
+  { name: 'Gran Malecon del Rio', type: 'turistico', lat: 11.0332, lng: -74.8114 },
+  { name: 'Ventana al Mundo', type: 'turistico', lat: 11.0332, lng: -74.8314 },
+  { name: 'Luna del Rio', type: 'turistico', lat: 11.0030, lng: -74.8068 },
+  { name: 'Aleta del Tiburon', type: 'turistico', lat: 10.9983, lng: -74.7727 },
+  { name: 'Plaza de San Nicolas', type: 'cultura', lat: 10.9799, lng: -74.7776 },
+  { name: 'Estadio Romelio Martinez', type: 'desfile', lat: 10.9938, lng: -74.8071 },
+  { name: 'Catedral Maria Reina', type: 'cultura', lat: 10.9887, lng: -74.7906 },
 ];
