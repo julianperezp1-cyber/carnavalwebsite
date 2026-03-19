@@ -206,6 +206,24 @@ export default function CuentaPage() {
     );
   }
 
+  // ═══ BADGES LOGIC ═══
+  const badges = [];
+  const meta = user?.user_metadata || {};
+  if (user) badges.push({ id: 'registered', emoji: '🎭', name: 'Carnavalero Registrado', desc: 'Creaste tu Carnaval ID' });
+  if (meta.profile_completed) badges.push({ id: 'profile', emoji: '⭐', name: 'Perfil Completo', desc: 'Completaste tu perfil carnavalero' });
+  if (meta.survey_completed) badges.push({ id: 'survey', emoji: '📋', name: 'Voz del Carnaval', desc: 'Respondiste la encuesta carnavalera' });
+
+  const allBadges = [
+    { id: 'registered', emoji: '🎭', name: 'Carnavalero Registrado', desc: 'Crea tu Carnaval ID', earned: badges.some(b => b.id === 'registered') },
+    { id: 'profile', emoji: '⭐', name: 'Perfil Completo', desc: 'Completa tu perfil carnavalero', earned: badges.some(b => b.id === 'profile') },
+    { id: 'survey', emoji: '📋', name: 'Voz del Carnaval', desc: 'Responde la encuesta carnavalera', earned: badges.some(b => b.id === 'survey') },
+    { id: 'foto', emoji: '📸', name: 'Fotografo', desc: 'Sube tu primera foto a la galeria', earned: false },
+    { id: 'carnaval2027', emoji: '🎉', name: 'Carnaval 2027', desc: 'Asiste al Carnaval 2027', earned: false },
+    { id: 'quiz', emoji: '🧠', name: 'Sabio del Carnaval', desc: 'Completa un quiz de la Academia', earned: false },
+    { id: 'social', emoji: '🤝', name: 'Conector', desc: 'Conecta con 5 carnavaleros', earned: false },
+    { id: 'veterano', emoji: '👑', name: 'Veterano', desc: 'Asiste a 5 Carnavales', earned: false },
+  ];
+
   // ═══ LOGGED IN VIEW ═══
   if (user) {
     return (
@@ -219,35 +237,44 @@ export default function CuentaPage() {
         </section>
         <div className="h-1.5 gradient-carnaval" />
 
-        <section className="py-16 sm:py-20 bg-white">
+        <section className="py-12 sm:py-16 bg-white">
           <div className="max-w-3xl mx-auto px-6 sm:px-8">
             {/* Profile card */}
-            <div className="bg-brand-dark rounded-2xl p-8 text-center relative overflow-hidden mb-8">
+            <div className="bg-brand-dark rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden mb-6">
               <div className="absolute top-0 left-0 right-0 h-1 gradient-carnaval" />
               <div className="w-20 h-20 bg-gradient-to-br from-carnaval-red to-gold rounded-full mx-auto mb-4 flex items-center justify-center">
                 <User className="h-10 w-10 text-white" />
               </div>
               <h2 className="text-xl font-display font-black text-white">
-                {user.user_metadata?.full_name || 'Carnavalero'}
+                {meta.full_name || meta.name || 'Carnavalero'}
               </h2>
               <p className="text-sm text-white/50 mt-1">{user.email}</p>
-              {user.user_metadata?.city && (
+              {(meta.city || meta.country) && (
                 <p className="text-xs text-white/40 mt-1 flex items-center justify-center gap-1">
                   <MapPin className="h-3 w-3" />
-                  {user.user_metadata.city}, {COUNTRIES.find(c => c.code === user.user_metadata?.country)?.name || ''}
+                  {meta.city}{meta.city && meta.country ? ', ' : ''}{meta.country || ''}
                 </p>
               )}
               <p className="text-xs text-gold mt-2">
                 Carnavalero desde {new Date(user.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'long' })}
               </p>
 
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-6 pt-6 border-t border-white/10">
+              {/* Earned badges preview */}
+              {badges.length > 0 && (
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  {badges.map(b => (
+                    <span key={b.id} className="text-2xl" title={b.name}>{b.emoji}</span>
+                  ))}
+                </div>
+              )}
+
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-5 pt-5 border-t border-white/10">
                 <div>
                   <p className="text-2xl font-display font-black text-white">0</p>
                   <p className="text-[10px] text-white/40">Carnavales</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-display font-black text-white">0</p>
+                  <p className="text-2xl font-display font-black text-white">{badges.length}</p>
                   <p className="text-[10px] text-white/40">Insignias</p>
                 </div>
                 <div>
@@ -255,26 +282,77 @@ export default function CuentaPage() {
                   <p className="text-[10px] text-white/40">Fotos</p>
                 </div>
               </div>
+
+              {/* Edit profile button */}
+              <Link href="/cuenta/completar"
+                className="inline-flex items-center gap-1.5 mt-5 text-xs text-white/50 hover:text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                <User className="h-3 w-3" /> Editar perfil
+              </Link>
             </div>
 
+            {/* ═══ BADGES SECTION ═══ */}
+            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-display font-black text-brand-dark flex items-center gap-2">
+                  <Trophy className="h-4 w-4 text-gold" /> Mis insignias
+                </h3>
+                <span className="text-xs text-gray-400">{badges.length} / {allBadges.length}</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {allBadges.map(badge => (
+                  <div key={badge.id}
+                    className={`text-center p-3 rounded-xl border transition-all ${
+                      badge.earned
+                        ? 'bg-white border-gold/30 shadow-sm'
+                        : 'bg-gray-100/50 border-gray-200 opacity-40'
+                    }`}>
+                    <span className="text-2xl block mb-1">{badge.emoji}</span>
+                    <p className={`text-[11px] font-bold ${badge.earned ? 'text-brand-dark' : 'text-gray-400'}`}>{badge.name}</p>
+                    <p className="text-[9px] text-gray-400 mt-0.5">{badge.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ═══ SURVEY CTA ═══ */}
+            {!meta.survey_completed && (
+              <div className="bg-gradient-to-r from-carnaval-red to-carnaval-red-hover rounded-2xl p-6 text-white relative overflow-hidden mb-6">
+                <div className="relative">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">📋</span>
+                    <span className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">+1 insignia</span>
+                  </div>
+                  <h3 className="text-lg font-display font-black mb-1">Si eres carnavalero, te queremos escuchar!</h3>
+                  <p className="text-sm text-white/80 mb-4">
+                    Responde nuestra encuesta y ayudanos a hacer un Carnaval cada vez mejor. Tu opinion vale oro.
+                  </p>
+                  <Link href="/cuenta/encuesta"
+                    className="inline-flex items-center gap-2 bg-white text-carnaval-red px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-white/90 transition-colors">
+                    Responder encuesta
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* Quick links */}
-            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
-              <Link href="/comunidad/galeria" className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow flex items-center gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <Link href="/comunidad/galeria" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
                 <Camera className="h-5 w-5 text-carnaval-red" />
-                <span className="text-sm font-bold text-brand-dark">Mi galeria</span>
+                <span className="text-xs font-bold text-brand-dark">Mi galeria</span>
               </Link>
-              <Link href="/comunidad/academia" className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow flex items-center gap-3">
+              <Link href="/comunidad/academia" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
                 <Trophy className="h-5 w-5 text-gold" />
-                <span className="text-sm font-bold text-brand-dark">Mis logros</span>
+                <span className="text-xs font-bold text-brand-dark">Academia</span>
               </Link>
               <a href="https://mercadocarnavalweb.vercel.app" target="_blank" rel="noopener noreferrer"
-                className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow flex items-center gap-3">
+                className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
                 <Ticket className="h-5 w-5 text-carnaval-green" />
-                <span className="text-sm font-bold text-brand-dark">Mercado Carnaval</span>
+                <span className="text-xs font-bold text-brand-dark">Mercado</span>
               </a>
-              <Link href="/comunidad" className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow flex items-center gap-3">
+              <Link href="/comunidad" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
                 <Heart className="h-5 w-5 text-carnaval-blue" />
-                <span className="text-sm font-bold text-brand-dark">Comunidad</span>
+                <span className="text-xs font-bold text-brand-dark">Comunidad</span>
               </Link>
             </div>
 
