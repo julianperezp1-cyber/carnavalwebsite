@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, ChevronDown, Search, ShoppingBag, User, ExternalLink } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, ShoppingBag, User, ExternalLink, Sparkles } from 'lucide-react';
 import { NAV_ITEMS, SOCIAL_LINKS, SITE_TAGLINE } from '@/lib/constants';
 
 export function Header() {
@@ -124,6 +124,15 @@ export function Header() {
                 <Search className="h-5 w-5" />
               </button>
 
+              {/* Red Social CTA - desktop */}
+              <Link
+                href="/red-social"
+                className="hidden lg:inline-flex items-center gap-1.5 bg-brand-dark hover:bg-brand-dark-light text-white px-3.5 py-2 rounded-lg text-sm font-bold transition-colors"
+              >
+                <Sparkles className="h-4 w-4 text-gold" />
+                Red Social
+              </Link>
+
               {/* Mercado CTA - desktop */}
               <a
                 href="https://mercado.carnavaldebarranquilla.org"
@@ -215,6 +224,14 @@ export function Header() {
 
             {/* Mobile bottom actions */}
             <div className="p-4 border-t border-gray-100 space-y-3">
+              <Link
+                href="/red-social"
+                className="flex items-center justify-center gap-2 w-full bg-brand-dark text-white px-4 py-3 rounded-xl text-sm font-bold transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                <Sparkles className="h-4 w-4 text-gold" />
+                Red Social Carnaval
+              </Link>
               <a
                 href="https://mercado.carnavaldebarranquilla.org"
                 className="flex items-center justify-center gap-2 w-full bg-carnaval-red hover:bg-carnaval-red-hover text-white px-4 py-3 rounded-xl text-sm font-bold transition-colors"
