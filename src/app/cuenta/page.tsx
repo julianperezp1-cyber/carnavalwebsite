@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import {
   User, Mail, Lock, ArrowRight, Ticket, Camera, Heart,
   Trophy, Star, LogOut, Shield, AlertCircle, CheckCircle,
-  Phone, MapPin, Globe, Eye, EyeOff, Check, X,
+  Phone, MapPin, Globe, Eye, EyeOff, Check, X, QrCode,
 } from 'lucide-react';
 import type { User as SupaUser } from '@supabase/supabase-js';
 
@@ -283,11 +283,17 @@ export default function CuentaPage() {
                 </div>
               </div>
 
-              {/* Edit profile button */}
-              <Link href="/cuenta/completar"
-                className="inline-flex items-center gap-1.5 mt-5 text-xs text-white/50 hover:text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
-                <User className="h-3 w-3" /> Editar perfil
-              </Link>
+              {/* Profile action buttons */}
+              <div className="flex items-center justify-center gap-2 mt-5">
+                <Link href="/cuenta/completar"
+                  className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                  <User className="h-3 w-3" /> Editar perfil
+                </Link>
+                <Link href="/cuenta/qr"
+                  className="inline-flex items-center gap-1.5 text-xs text-gold hover:text-gold bg-gold/10 hover:bg-gold/20 px-4 py-2 rounded-lg transition-colors">
+                  <QrCode className="h-3 w-3" /> Mi QR
+                </Link>
+              </div>
             </div>
 
             {/* ═══ BADGES SECTION ═══ */}
