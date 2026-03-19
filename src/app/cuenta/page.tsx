@@ -9,6 +9,7 @@ import {
   User, Mail, Lock, ArrowRight, Ticket, Camera, Heart,
   Trophy, Star, LogOut, Shield, AlertCircle, CheckCircle,
   Phone, MapPin, Globe, Eye, EyeOff, Check, X, QrCode,
+  Users, MessageCircle,
 } from 'lucide-react';
 import type { User as SupaUser } from '@supabase/supabase-js';
 
@@ -284,7 +285,7 @@ export default function CuentaPage() {
               </div>
 
               {/* Profile action buttons */}
-              <div className="flex items-center justify-center gap-2 mt-5">
+              <div className="flex items-center justify-center gap-2 mt-5 flex-wrap">
                 <Link href="/cuenta/completar"
                   className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
                   <User className="h-3 w-3" /> Editar perfil
@@ -292,6 +293,10 @@ export default function CuentaPage() {
                 <Link href="/cuenta/qr"
                   className="inline-flex items-center gap-1.5 text-xs text-gold hover:text-gold bg-gold/10 hover:bg-gold/20 px-4 py-2 rounded-lg transition-colors">
                   <QrCode className="h-3 w-3" /> Mi QR
+                </Link>
+                <Link href={`/carnavalero/${user.id}`}
+                  className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                  <Eye className="h-3 w-3" /> Ver perfil publico
                 </Link>
               </div>
             </div>
@@ -342,13 +347,21 @@ export default function CuentaPage() {
             )}
 
             {/* Quick links */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6">
+              <Link href="/cuenta/amigos" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
+                <Users className="h-5 w-5 text-carnaval-red" />
+                <span className="text-xs font-bold text-brand-dark">Amigos</span>
+              </Link>
+              <Link href="/cuenta/mensajes" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
+                <MessageCircle className="h-5 w-5 text-carnaval-green" />
+                <span className="text-xs font-bold text-brand-dark">Mensajes</span>
+              </Link>
               <Link href="/comunidad/galeria" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
-                <Camera className="h-5 w-5 text-carnaval-red" />
-                <span className="text-xs font-bold text-brand-dark">Mi galeria</span>
+                <Camera className="h-5 w-5 text-gold" />
+                <span className="text-xs font-bold text-brand-dark">Galeria</span>
               </Link>
               <Link href="/comunidad/academia" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
-                <Trophy className="h-5 w-5 text-gold" />
+                <Trophy className="h-5 w-5 text-carnaval-blue" />
                 <span className="text-xs font-bold text-brand-dark">Academia</span>
               </Link>
               <a href="https://mercadocarnavalweb.vercel.app" target="_blank" rel="noopener noreferrer"
@@ -357,7 +370,7 @@ export default function CuentaPage() {
                 <span className="text-xs font-bold text-brand-dark">Mercado</span>
               </a>
               <Link href="/comunidad" className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow flex flex-col items-center gap-2 text-center">
-                <Heart className="h-5 w-5 text-carnaval-blue" />
+                <Heart className="h-5 w-5 text-carnaval-red" />
                 <span className="text-xs font-bold text-brand-dark">Comunidad</span>
               </Link>
             </div>
