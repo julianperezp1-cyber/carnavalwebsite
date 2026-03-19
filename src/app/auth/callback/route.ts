@@ -31,19 +31,20 @@ export async function GET(request: Request) {
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
       const forwardedHost = request.headers.get('x-forwarded-host');
       const isLocalEnv = process.env.NODE_ENV === 'development';
+      const baseUrl = isLocalEnv ? origin : forwardedHost ? `https://${forwardedHost}` : origin;
 
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
+      // Check if user has completed their profile
+      const profileCompleted = data.user?.user_metadata?.profile_completed_step1;
+
+      // If new user (from Google OAuth), redirect to profile completion
+      const destination = profileCompleted ? next : '/cuenta/completar';
+
+      return NextResponse.redirect(`${baseUrl}${destination}`);
     }
   }
 
