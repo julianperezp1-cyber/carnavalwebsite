@@ -81,7 +81,7 @@ export default function HomePage() {
                   <p className="text-[10px] text-gold font-bold uppercase tracking-[0.2em] mb-1">Faltan</p>
                   <p className="text-sm text-white/50">6 — 9 de febrero, {NEXT_CARNIVAL.year}</p>
                 </div>
-                <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                <div className="grid grid-cols-4 gap-1 sm:gap-2 md:gap-3">
                   {[
                     { value: countdown.days, label: 'Dias' },
                     { value: countdown.hours, label: 'Hrs' },
@@ -216,7 +216,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <div className="bg-carnaval-red rounded-3xl p-8 sm:p-12 relative overflow-hidden">
             <div className="absolute bottom-0 left-0 right-0 h-1 gradient-carnaval opacity-30" />
-            <div className="grid lg:grid-cols-5 gap-8 items-center relative">
+            <div className="grid lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 items-center relative">
               <div className="lg:col-span-3">
                 <p className="text-xs font-bold text-white/50 uppercase tracking-[0.2em] mb-3">Planifica tu viaje</p>
                 <h2 className="text-3xl sm:text-4xl font-display font-black text-white mb-4 leading-[0.95]">
@@ -326,7 +326,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {QUICK_FACTS.map((f, i) => (
               <div key={i} className="text-center">
-                <p className="text-2xl sm:text-3xl md:text-4xl font-display font-black text-gold">{f.number}</p>
+                <p className="text-xl sm:text-3xl md:text-4xl font-display font-black text-gold">{f.number}</p>
                 <p className="text-[10px] sm:text-[11px] text-white/40 font-medium mt-1">{f.label}</p>
               </div>
             ))}
@@ -338,7 +338,7 @@ export default function HomePage() {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-[0.3em] mb-8">Con el apoyo de</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-10 gap-y-4">
             {SPONSORS.map((s, i) => (
               <span key={i} className="text-sm font-bold text-gray-200 hover:text-gray-400 transition-colors cursor-default">{s.name}</span>
             ))}

@@ -55,7 +55,7 @@ export default function AcademiaPage() {
             <h2 className="text-3xl sm:text-4xl font-display font-black text-brand-dark">Aprende a Bailar</h2>
             <p className="text-gray-500 mt-2 max-w-2xl">Cursos en video con maestros de danza del Carnaval. Desde principiante hasta avanzado.</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {CURSOS_DANZA.map((c, i) => (
               <div key={i} className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow group">
                 <div className="aspect-video bg-gradient-to-br from-carnaval-red/10 to-gold/10 flex items-center justify-center">
@@ -114,7 +114,7 @@ export default function AcademiaPage() {
             <h2 className="text-3xl sm:text-4xl font-display font-black text-brand-dark">Quizzes Interactivos</h2>
             <p className="text-gray-500 mt-2 max-w-2xl">Pon a prueba tu conocimiento carnavalero. Necesitas Carnaval ID para guardar tus resultados.</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {QUIZZES.map((q, i) => (
               <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-2 mb-3">

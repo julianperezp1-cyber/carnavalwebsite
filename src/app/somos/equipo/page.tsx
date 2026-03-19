@@ -33,7 +33,7 @@ export default function EquipoPage() {
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <div className="bg-gradient-to-r from-brand-dark to-brand-dark/95 rounded-2xl p-8 sm:p-10 lg:p-12">
-            <div className="flex flex-col sm:flex-row gap-8 items-center">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
               <div className="w-32 h-32 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
                 <User className="h-16 w-16 text-white/30" />
               </div>

@@ -23,7 +23,7 @@ export default function ContactoPage() {
 
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12">
             {/* Contact info */}
             <div className="lg:col-span-2 space-y-8">
               <div>

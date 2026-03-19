@@ -80,7 +80,7 @@ export default function SomosPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-xs font-bold text-carnaval-green uppercase tracking-[0.2em] mb-3">Valores</p>
           <h2 className="text-2xl sm:text-3xl font-display font-black text-brand-dark mb-10">Lo que nos define</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {VALUES.map((v, i) => (
               <div key={i} className="bg-gray-50 rounded-xl p-5 text-center border border-gray-100 hover:shadow-lg transition-shadow">
                 <p className="text-sm font-display font-black text-brand-dark">{v}</p>
@@ -95,7 +95,7 @@ export default function SomosPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-xs font-bold text-gold uppercase tracking-[0.2em] mb-3">Atributos de marca</p>
           <h2 className="text-2xl sm:text-3xl font-display font-black text-white mb-10">Lo que representamos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {[
               { title: 'Alegria y orgullo', desc: 'El Carnaval como expresion identitaria.' },
               { title: 'Innovacion cultural', desc: 'Un patrimonio vivo y en evolucion.' },

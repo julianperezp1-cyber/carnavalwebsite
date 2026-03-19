@@ -48,7 +48,7 @@ export default function NoticiasPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-xs font-bold text-carnaval-red uppercase tracking-[0.2em] mb-8">Destacadas</p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Main featured */}
             {featured[0] && (
               <Link href={`/noticias/${featured[0].id}`} className="lg:col-span-2 group">

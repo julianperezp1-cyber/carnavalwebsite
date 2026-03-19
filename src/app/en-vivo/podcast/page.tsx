@@ -35,7 +35,7 @@ export default function PodcastPage() {
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <div className="bg-gradient-to-r from-brand-dark to-brand-dark/95 rounded-2xl p-8 sm:p-10 lg:p-12">
-            <div className="flex flex-col lg:flex-row gap-8 items-center">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 items-center">
               <div className="w-48 h-48 sm:w-56 sm:h-56 bg-gradient-to-br from-carnaval-red to-gold rounded-2xl flex items-center justify-center shrink-0">
                 <Headphones className="h-20 w-20 text-white" />
               </div>

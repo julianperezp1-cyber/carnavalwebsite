@@ -45,7 +45,7 @@ export default function TransparenciaPage() {
       {/* Categories overview */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-16">
             {DOC_CATEGORIES.map((cat, i) => (
               <div key={i} className="bg-gray-50 rounded-2xl p-5 border border-gray-100 flex items-center gap-4">
                 <div className={`w-10 h-10 ${cat.bg} rounded-xl flex items-center justify-center shrink-0`}>

@@ -11,7 +11,7 @@ const CarnavalMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[500px] sm:h-[600px] lg:h-[700px] rounded-2xl bg-brand-dark flex items-center justify-center">
+      <div className="w-full h-[400px] sm:h-[500px] lg:h-[700px] rounded-2xl bg-brand-dark flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-carnaval-red/30 border-t-carnaval-red rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white/50 text-sm">Cargando mapa...</p>
@@ -88,7 +88,7 @@ export default function MapaPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <p className="text-xs font-bold text-carnaval-blue uppercase tracking-[0.2em] mb-2">Lugares emblematicos</p>
           <h2 className="text-2xl sm:text-3xl font-display font-black text-brand-dark mb-8">Barranquilla te espera</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {LANDMARKS.map((lm, i) => (
               <div key={i} className="bg-white rounded-xl p-4 border border-gray-100 hover:shadow-lg transition-shadow">
                 <MapPin className="h-4 w-4 text-carnaval-blue mb-2" />
