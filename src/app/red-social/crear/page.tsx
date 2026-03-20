@@ -122,12 +122,8 @@ export default function CrearPage() {
         if (insertErr) throw new Error(insertErr.message);
 
         // Update posts_count
-        await supabase.rpc('increment_posts_count', { user_id_input: user.id }).catch(() => {
-          // If RPC doesn't exist, manually update
-          supabase.from('profiles').select('posts_count').eq('id', user.id).single().then(({ data }) => {
-            supabase.from('profiles').update({ posts_count: (data?.posts_count || 0) + 1 }).eq('id', user.id);
-          });
-        });
+        const { data: profileData } = await supabase.from('profiles').select('posts_count').eq('id', user.id).single();
+        await supabase.from('profiles').update({ posts_count: (profileData?.posts_count || 0) + 1 }).eq('id', user.id);
       }
 
       setProgress(100);

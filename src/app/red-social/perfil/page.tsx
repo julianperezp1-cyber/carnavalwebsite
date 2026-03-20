@@ -48,6 +48,7 @@ export default function MyProfilePage() {
     if (profileRes.data) {
       setProfile({
         ...profileRes.data,
+        nickname: contactRes.data?.nickname || null,
         followers_count: followersRes.count || 0,
         following_count: followingRes.count || 0,
         posts_count: postsRes.data?.length || 0,

@@ -168,8 +168,8 @@ export default function ActividadPage() {
 function NotifSection({ title, notifs, getIcon, getMessage, followedBack, followBack }: {
   title: string;
   notifs: Notification[];
-  getIcon: (type: string) => JSX.Element;
-  getMessage: (n: Notification) => JSX.Element;
+  getIcon: (type: string) => React.ReactNode;
+  getMessage: (n: Notification) => React.ReactNode;
   followedBack: Set<string>;
   followBack: (id: string) => void;
 }) {
