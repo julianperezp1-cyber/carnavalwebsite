@@ -2,37 +2,15 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
 import {
-  Heart,
-  MessageCircle,
-  Send,
-  Bookmark,
-  MoreHorizontal,
-  Flag,
-  Link2,
-  Trash2,
-  ArrowLeft,
-  MapPin,
-  Loader2,
+  Heart, MessageCircle, Send, Bookmark, MoreHorizontal,
+  Flag, Link2, Trash2, MapPin, Loader2,
 } from 'lucide-react';
 
-/* ─── Types ──────────────────────────────────────────────── */
-
-interface Profile {
-  id: string;
-  full_name: string | null;
-  city: string | null;
-  country: string | null;
-}
-
-interface ContactInfo {
-  nickname: string | null;
-  slogan: string | null;
-}
-
-interface Post {
+interface PostData {
   id: string;
   user_id: string;
   caption: string | null;
@@ -40,68 +18,43 @@ interface Post {
   media_type: 'image' | 'video' | null;
   thumbnail_url: string | null;
   category: string | null;
-  visibility: 'public' | 'friends' | 'private';
+  visibility: string;
   likes_count: number;
   comments_count: number;
   created_at: string;
-  profiles: Profile;
-  contact_info: ContactInfo | null;
 }
 
-interface Comment {
+interface CommentData {
   id: string;
   post_id: string;
   user_id: string;
   content: string;
   created_at: string;
-  profiles: Profile;
-  contact_info: ContactInfo | null;
 }
-
-/* ─── Helpers ────────────────────────────────────────────── */
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diff = Math.floor((now - then) / 1000);
-
   if (diff < 60) return 'Ahora';
   if (diff < 3600) return `${Math.floor(diff / 60)}m`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
   if (diff < 604800) return `${Math.floor(diff / 86400)}d`;
-
-  return new Date(dateStr).toLocaleDateString('es-CO', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+  return new Date(dateStr).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function getInitials(name: string | null): string {
   if (!name) return '?';
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
+  return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 }
-
-function displayName(profile: Profile, contactInfo: ContactInfo | null): string {
-  return contactInfo?.nickname || profile.full_name || 'Usuario';
-}
-
-/* ─── Avatar ─────────────────────────────────────────────── */
 
 function Avatar({ name, size = 32 }: { name: string | null; size?: number }) {
-  const fontSize = size < 28 ? 10 : size < 40 ? 12 : 14;
   return (
     <div
       className="shrink-0 rounded-full flex items-center justify-center text-white font-bold"
       style={{
-        width: size,
-        height: size,
-        fontSize,
+        width: size, height: size,
+        fontSize: size < 28 ? 10 : size < 40 ? 12 : 14,
         background: 'linear-gradient(135deg, #E83331, #FFCE38, #00AB25)',
       }}
     >
@@ -110,20 +63,19 @@ function Avatar({ name, size = 32 }: { name: string | null; size?: number }) {
   );
 }
 
-/* ─── Main Page Component ────────────────────────────────── */
-
 export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
   const postId = params.id as string;
   const { user, loading: authLoading } = useAuth();
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState<PostData | null>(null);
+  const [authorName, setAuthorName] = useState('Carnavalero');
+  const [authorNickname, setAuthorNickname] = useState<string | null>(null);
+  const [comments, setComments] = useState<(CommentData & { author_name: string; author_nickname: string | null })[]>([]);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [saved, setSaved] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
@@ -133,7 +85,6 @@ export default function PostDetailPage() {
   const menuRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
-  /* ── Fetch post ── */
   const fetchPost = useCallback(async () => {
     const { data: postData, error } = await supabase
       .from('posts')
@@ -146,24 +97,20 @@ export default function PostDetailPage() {
       return;
     }
 
-    // Fetch author info separately
+    setPost(postData);
+    setLikesCount(postData.likes_count ?? 0);
+
+    // Fetch author info
     const [profileRes, contactRes] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', postData.user_id).single(),
-      supabase.from('contact_info').select('*').eq('id', postData.user_id).maybeSingle(),
+      supabase.from('profiles').select('full_name').eq('id', postData.user_id).single(),
+      supabase.from('contact_info').select('nickname').eq('id', postData.user_id).maybeSingle(),
     ]);
 
-    const assembled: Post = {
-      ...postData,
-      profiles: profileRes.data || { id: postData.user_id, full_name: 'Carnavalero', city: null, country: null },
-      contact_info: contactRes.data || null,
-    };
-
-    setPost(assembled);
-    setLikesCount(postData.likes_count ?? 0);
+    setAuthorName(profileRes.data?.full_name || 'Carnavalero');
+    setAuthorNickname(contactRes.data?.nickname || null);
     setLoading(false);
   }, [postId]);
 
-  /* ── Fetch comments ── */
   const fetchComments = useCallback(async () => {
     const { data: commentsData } = await supabase
       .from('post_comments')
@@ -176,28 +123,24 @@ export default function PostDetailPage() {
       return;
     }
 
-    // Fetch author info for commenters
-    const userIds = [...new Set(commentsData.map((c) => c.user_id))];
+    const userIds = [...new Set(commentsData.map(c => c.user_id))];
     const [profilesRes, contactsRes] = await Promise.all([
-      supabase.from('profiles').select('*').in('id', userIds),
-      supabase.from('contact_info').select('*').in('id', userIds),
+      supabase.from('profiles').select('id, full_name').in('id', userIds),
+      supabase.from('contact_info').select('id, nickname').in('id', userIds),
     ]);
 
-    const profileMap: Record<string, Profile> = {};
-    profilesRes.data?.forEach((p) => { profileMap[p.id] = p; });
-    const contactMap: Record<string, ContactInfo> = {};
-    contactsRes.data?.forEach((c) => { contactMap[c.id] = c; });
+    const profileMap: Record<string, string> = {};
+    profilesRes.data?.forEach(p => { profileMap[p.id] = p.full_name || 'Carnavalero'; });
+    const contactMap: Record<string, string | null> = {};
+    contactsRes.data?.forEach(c => { contactMap[c.id] = c.nickname; });
 
-    const enriched: Comment[] = commentsData.map((c) => ({
+    setComments(commentsData.map(c => ({
       ...c,
-      profiles: profileMap[c.user_id] || { id: c.user_id, full_name: 'Carnavalero', city: null, country: null },
-      contact_info: contactMap[c.user_id] || null,
-    }));
-
-    setComments(enriched);
+      author_name: profileMap[c.user_id] || 'Carnavalero',
+      author_nickname: contactMap[c.user_id] || null,
+    })));
   }, [postId]);
 
-  /* ── Check if liked ── */
   const checkLiked = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
@@ -206,118 +149,70 @@ export default function PostDetailPage() {
       .eq('post_id', postId)
       .eq('user_id', user.id)
       .maybeSingle();
-
     setLiked(!!data);
   }, [postId, user]);
 
-  useEffect(() => {
-    fetchPost();
-    fetchComments();
-  }, [fetchPost, fetchComments]);
+  useEffect(() => { fetchPost(); fetchComments(); }, [fetchPost, fetchComments]);
+  useEffect(() => { if (!authLoading) checkLiked(); }, [authLoading, checkLiked]);
 
+  // Close menu on outside click
   useEffect(() => {
-    if (!authLoading) checkLiked();
-  }, [authLoading, checkLiked]);
-
-  /* ── Close menu on outside click ── */
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  /* ── Like toggle ── */
   const toggleLike = async () => {
     if (!user) return;
-
     if (liked) {
       setLiked(false);
-      setLikesCount((c) => Math.max(0, c - 1));
-      await supabase
-        .from('post_likes')
-        .delete()
-        .eq('post_id', postId)
-        .eq('user_id', user.id);
-      await supabase
-        .from('posts')
-        .update({ likes_count: Math.max(0, likesCount - 1) })
-        .eq('id', postId);
+      setLikesCount(c => Math.max(0, c - 1));
+      await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', user.id);
     } else {
       setLiked(true);
-      setLikesCount((c) => c + 1);
-      await supabase
-        .from('post_likes')
-        .insert({ post_id: postId, user_id: user.id });
-      await supabase
-        .from('posts')
-        .update({ likes_count: likesCount + 1 })
-        .eq('id', postId);
+      setLikesCount(c => c + 1);
+      await supabase.from('post_likes').insert({ post_id: postId, user_id: user.id });
     }
   };
 
-  /* ── Add comment ── */
   const addComment = async () => {
     if (!user || !commentText.trim() || submittingComment) return;
-
     setSubmittingComment(true);
     const content = commentText.trim();
     setCommentText('');
 
     // Optimistic comment
-    const optimistic: Comment = {
+    setComments(prev => [...prev, {
       id: crypto.randomUUID(),
       post_id: postId,
       user_id: user.id,
       content,
       created_at: new Date().toISOString(),
-      profiles: {
-        id: user.id,
-        full_name: user.user_metadata?.full_name || 'Tu',
-        city: null,
-        country: null,
-      },
-      contact_info: null,
-    };
-    setComments((prev) => [...prev, optimistic]);
+      author_name: user.user_metadata?.full_name || 'Tú',
+      author_nickname: null,
+    }]);
 
-    const { error } = await supabase
-      .from('post_comments')
-      .insert({ post_id: postId, user_id: user.id, content });
-
-    if (!error) {
-      await supabase
-        .from('posts')
-        .update({ comments_count: (post?.comments_count ?? 0) + 1 })
-        .eq('id', postId);
-      // Refresh comments to get real data
-      fetchComments();
-    }
+    await supabase.from('post_comments').insert({ post_id: postId, user_id: user.id, content });
+    fetchComments();
     setSubmittingComment(false);
   };
 
-  /* ── Delete post ── */
   const deletePost = async () => {
     if (!user || !post || post.user_id !== user.id) return;
-    if (!confirm('¿Eliminar esta publicacion?')) return;
-
+    if (!confirm('¿Eliminar esta publicación?')) return;
     await supabase.from('posts').delete().eq('id', postId);
     router.push('/red-social');
   };
 
-  /* ── Share / copy link ── */
   const copyLink = async () => {
-    const url = `${window.location.origin}/red-social/post/${postId}`;
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(`${window.location.origin}/red-social/post/${postId}`);
     setCopiedLink(true);
     setMenuOpen(false);
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  /* ── Loading state ── */
   if (loading) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center py-20">
@@ -330,24 +225,19 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-full bg-white flex flex-col items-center justify-center gap-4 py-20">
         <p className="text-gray-500 text-lg">Publicación no encontrada</p>
-        <button
-          onClick={() => router.push('/red-social')}
-          className="text-carnaval-red hover:underline flex items-center gap-2"
-        >
-          <ArrowLeft className="w-4 h-4" /> Volver
+        <button onClick={() => router.push('/red-social')} className="text-carnaval-red hover:underline text-sm">
+          ← Volver al feed
         </button>
       </div>
     );
   }
 
-  const authorName = displayName(post.profiles, post.contact_info);
+  const displayAuthor = authorNickname || authorName.split(' ')[0];
   const isOwner = user?.id === post.user_id;
-  const location = [post.profiles.city, post.profiles.country].filter(Boolean).join(', ');
 
-  /* ── Render ── */
   return (
     <div className="min-h-full bg-white">
-      {/* Toast for copied link */}
+      {/* Copied link toast */}
       {copiedLink && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-carnaval-green text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
           Enlace copiado ✓
@@ -355,7 +245,44 @@ export default function PostDetailPage() {
       )}
 
       <div className="max-w-2xl mx-auto">
-        {/* Post media */}
+        {/* ═══ POST HEADER ═══ */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+          <Link href={`/carnavalero/${post.user_id}`}>
+            <div className="w-9 h-9 rounded-full p-[2px]" style={{ background: 'linear-gradient(135deg, #E83331, #FFCE38, #00AB25)' }}>
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                <span className="text-[11px] font-bold text-brand-dark">{getInitials(authorName)}</span>
+              </div>
+            </div>
+          </Link>
+          <div className="flex-1 min-w-0">
+            <Link href={`/carnavalero/${post.user_id}`} className="text-[13px] font-semibold text-brand-dark hover:underline block truncate">
+              {displayAuthor}
+            </Link>
+            {post.category && <span className="text-[11px] text-gray-400">{post.category}</span>}
+          </div>
+          <div className="relative" ref={menuRef}>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="text-gray-400 hover:text-brand-dark p-1 transition">
+              <MoreHorizontal className="w-5 h-5" />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-8 w-52 bg-white border border-gray-100 rounded-xl shadow-xl z-40 overflow-hidden">
+                <button onClick={copyLink} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                  <Link2 className="w-4 h-4" /> Copiar enlace
+                </button>
+                <button onClick={() => setMenuOpen(false)} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">
+                  <Flag className="w-4 h-4" /> Reportar
+                </button>
+                {isOwner && (
+                  <button onClick={deletePost} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-carnaval-red hover:bg-carnaval-red/5 transition border-t border-gray-100">
+                    <Trash2 className="w-4 h-4" /> Eliminar
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ═══ MEDIA ═══ */}
         <div className="bg-gray-100">
           {post.media_type === 'video' ? (
             <video
@@ -366,112 +293,49 @@ export default function PostDetailPage() {
               className="w-full max-h-[500px] object-contain"
             />
           ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={post.media_url || '/placeholder.jpg'}
-              alt={post.caption || 'Post'}
+              alt={post.caption || 'Post del Carnaval'}
               className="w-full max-h-[500px] object-contain"
             />
           )}
         </div>
 
-        {/* Post header */}
+        {/* ═══ ACTIONS ═══ */}
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar name={post.profiles.full_name} size={36} />
-            <div className="min-w-0">
-              <p className="text-brand-dark font-semibold text-sm truncate">{authorName}</p>
-              <p className="text-gray-400 text-xs">{timeAgo(post.created_at)}</p>
-            </div>
-          </div>
-
-          {/* Three-dot menu */}
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-400 hover:text-brand-dark p-1 transition"
-            >
-              <MoreHorizontal className="w-5 h-5" />
-            </button>
-
-            {menuOpen && (
-              <div className="absolute right-0 top-8 w-52 bg-white border border-gray-100 rounded-xl shadow-xl z-40 overflow-hidden">
-                <button
-                  onClick={copyLink}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
-                >
-                  <Link2 className="w-4 h-4" /> Copiar enlace
-                </button>
-                <button
-                  onClick={() => setMenuOpen(false)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
-                >
-                  <Flag className="w-4 h-4" /> Reportar
-                </button>
-                {isOwner && (
-                  <button
-                    onClick={deletePost}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-carnaval-red hover:bg-carnaval-red/5 transition border-t border-gray-100"
-                  >
-                    <Trash2 className="w-4 h-4" /> Eliminar
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Action row */}
-        <div className="flex items-center justify-between px-4 pb-2">
           <div className="flex items-center gap-4">
             <button onClick={toggleLike} className="transition active:scale-90">
-              <Heart
-                className={`w-6 h-6 transition ${
-                  liked
-                    ? 'fill-carnaval-red text-carnaval-red scale-110'
-                    : 'text-brand-dark hover:text-carnaval-red'
-                }`}
-              />
+              <Heart className={`w-6 h-6 transition ${liked ? 'fill-carnaval-red text-carnaval-red' : 'text-brand-dark hover:text-carnaval-red'}`} />
             </button>
-            <button
-              onClick={() => commentInputRef.current?.focus()}
-              className="text-brand-dark hover:text-gray-600 transition"
-            >
+            <button onClick={() => commentInputRef.current?.focus()} className="text-brand-dark hover:text-gray-600 transition">
               <MessageCircle className="w-6 h-6" />
             </button>
             <button onClick={copyLink} className="text-brand-dark hover:text-gray-600 transition">
               <Send className="w-6 h-6" />
             </button>
           </div>
-          <button
-            onClick={() => setSaved(!saved)}
-            className="transition"
-          >
-            <Bookmark
-              className={`w-6 h-6 transition ${
-                saved ? 'fill-gold text-gold' : 'text-brand-dark hover:text-gray-600'
-              }`}
-            />
-          </button>
+          <Bookmark className="w-6 h-6 text-brand-dark hover:text-gray-500 cursor-pointer transition" />
         </div>
 
-        {/* Like count */}
+        {/* ═══ LIKES ═══ */}
         <div className="px-4 pb-1">
-          <p className="text-brand-dark font-semibold text-sm">
+          <p className="text-brand-dark font-semibold text-[13px]">
             {likesCount.toLocaleString()} me gusta
           </p>
         </div>
 
-        {/* Caption */}
+        {/* ═══ CAPTION ═══ */}
         {post.caption && (
           <div className="px-4 pb-2">
-            <p className="text-brand-dark text-sm leading-relaxed">
-              <span className="font-semibold mr-1">{authorName}</span>
+            <p className="text-[13px] text-brand-dark leading-relaxed">
+              <Link href={`/carnavalero/${post.user_id}`} className="font-semibold mr-1 hover:underline">{displayAuthor}</Link>
               {post.caption}
             </p>
           </div>
         )}
 
-        {/* Category badge */}
+        {/* ═══ CATEGORY BADGE ═══ */}
         {post.category && (
           <div className="px-4 pb-2">
             <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-carnaval-red/10 text-carnaval-red">
@@ -480,18 +344,14 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        {/* Location */}
-        {location && (
-          <div className="px-4 pb-3 flex items-center gap-1.5 text-gray-400 text-xs">
-            <MapPin className="w-3.5 h-3.5" />
-            <span>{location}</span>
-          </div>
-        )}
+        {/* ═══ TIMESTAMP ═══ */}
+        <div className="px-4 pb-3">
+          <span className="text-[10px] text-gray-300 uppercase tracking-wide">{timeAgo(post.created_at)}</span>
+        </div>
 
-        {/* Divider */}
         <div className="border-t border-gray-100 mx-4" />
 
-        {/* Comments section */}
+        {/* ═══ COMMENTS ═══ */}
         <div className="px-4 pt-3 pb-24">
           {comments.length > 0 && (
             <p className="text-gray-400 text-sm font-medium mb-3">
@@ -500,21 +360,22 @@ export default function PostDetailPage() {
           )}
 
           <div className="space-y-4">
-            {comments.map((comment) => {
-              const cName = displayName(comment.profiles, comment.contact_info);
-              return (
-                <div key={comment.id} className="flex gap-3">
-                  <Avatar name={comment.profiles.full_name} size={28} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-brand-dark text-sm leading-relaxed">
-                      <span className="font-semibold mr-1">{cName}</span>
-                      {comment.content}
-                    </p>
-                    <p className="text-gray-300 text-xs mt-0.5">{timeAgo(comment.created_at)}</p>
-                  </div>
+            {comments.map(comment => (
+              <div key={comment.id} className="flex gap-3">
+                <Link href={`/carnavalero/${comment.user_id}`}>
+                  <Avatar name={comment.author_name} size={28} />
+                </Link>
+                <div className="flex-1 min-w-0">
+                  <p className="text-brand-dark text-[13px] leading-relaxed">
+                    <Link href={`/carnavalero/${comment.user_id}`} className="font-semibold mr-1 hover:underline">
+                      {comment.author_nickname || comment.author_name.split(' ')[0]}
+                    </Link>
+                    {comment.content}
+                  </p>
+                  <p className="text-gray-300 text-[11px] mt-0.5">{timeAgo(comment.created_at)}</p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
 
             {comments.length === 0 && (
               <p className="text-gray-300 text-sm text-center py-6">
@@ -524,7 +385,7 @@ export default function PostDetailPage() {
           </div>
         </div>
 
-        {/* Sticky comment input - positioned above bottom nav */}
+        {/* ═══ STICKY COMMENT INPUT ═══ */}
         <div className="fixed bottom-16 left-0 right-0 border-t border-gray-100 bg-white px-4 py-3 flex items-center gap-3 z-20">
           {user ? (
             <>
@@ -534,21 +395,21 @@ export default function PostDetailPage() {
                 type="text"
                 placeholder="Agrega un comentario..."
                 value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && addComment()}
-                className="flex-1 bg-transparent text-brand-dark text-sm placeholder:text-gray-300 outline-none"
+                onChange={e => setCommentText(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addComment()}
+                className="flex-1 bg-transparent text-brand-dark text-[13px] placeholder:text-gray-300 outline-none"
               />
               <button
                 onClick={addComment}
                 disabled={!commentText.trim() || submittingComment}
-                className="text-carnaval-red font-semibold text-sm disabled:opacity-30 transition"
+                className="text-carnaval-red font-semibold text-[13px] disabled:opacity-30 transition"
               >
                 Publicar
               </button>
             </>
           ) : (
             <p className="text-gray-400 text-sm w-full text-center py-1">
-              Inicia sesión para comentar
+              <Link href="/cuenta" className="text-carnaval-red hover:underline">Inicia sesión</Link> para comentar
             </p>
           )}
         </div>
