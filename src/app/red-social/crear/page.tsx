@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
 import {
-  Upload, Image as ImageIcon, Film, X, Globe, Users, Lock,
-  ChevronDown, Loader2, MapPin, Check, AlertCircle, RefreshCw, Clock,
+  Upload, Image as ImageIcon, Film, X, Globe, Users, Lock, Heart,
+  ChevronDown, Loader2, MapPin, Check, AlertCircle, RefreshCw, Clock, Tag, Search,
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -18,6 +18,7 @@ const CATEGORIES = [
 const VISIBILITY = [
   { value: 'public', label: 'Público', icon: Globe, desc: 'Todos pueden ver' },
   { value: 'friends', label: 'Seguidores', icon: Users, desc: 'Solo tus seguidores' },
+  { value: 'close_friends', label: 'Amigos', icon: Heart, desc: 'Solo amigos carnavaleros' },
   { value: 'private', label: 'Privado', icon: Lock, desc: 'Solo tú' },
 ] as const;
 
@@ -42,13 +43,44 @@ export default function CrearPage() {
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
   const [caption, setCaption] = useState('');
   const [category, setCategory] = useState('');
-  const [visibility, setVisibility] = useState<'public' | 'friends' | 'private'>('public');
+  const [visibility, setVisibility] = useState<'public' | 'friends' | 'close_friends' | 'private'>('public');
   const [location, setLocation] = useState('');
   const [catOpen, setCatOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [tagSearch, setTagSearch] = useState('');
+  const [tagResults, setTagResults] = useState<{ id: string; full_name: string; username: string | null }[]>([]);
+  const [taggedUsers, setTaggedUsers] = useState<{ id: string; full_name: string; username: string | null }[]>([]);
+  const [searchingTags, setSearchingTags] = useState(false);
+
+  // Search users for tagging
+  const searchUsersForTag = async (query: string) => {
+    if (!query.trim()) { setTagResults([]); return; }
+    setSearchingTags(true);
+    const supabase = createClient();
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, username')
+      .or(`full_name.ilike.%${query.trim()}%,username.ilike.%${query.trim()}%`)
+      .neq('id', user?.id || '')
+      .limit(6);
+    setTagResults(profiles || []);
+    setSearchingTags(false);
+  };
+
+  const addTag = (u: { id: string; full_name: string; username: string | null }) => {
+    if (!taggedUsers.find(t => t.id === u.id)) {
+      setTaggedUsers(prev => [...prev, u]);
+    }
+    setTagSearch('');
+    setTagResults([]);
+  };
+
+  const removeTag = (userId: string) => {
+    setTaggedUsers(prev => prev.filter(t => t.id !== userId));
+  };
 
   const validate = useCallback((f: File): string | null => {
     const isImg = IMAGE_TYPES.includes(f.type);
@@ -108,7 +140,7 @@ export default function CrearPage() {
         });
         if (insertErr) throw new Error(insertErr.message);
       } else {
-        const { error: insertErr } = await supabase.from('posts').insert({
+        const { data: postData, error: insertErr } = await supabase.from('posts').insert({
           user_id: user.id,
           caption: caption.trim() || null,
           media_url: publicUrl,
@@ -118,8 +150,18 @@ export default function CrearPage() {
           visibility,
           likes_count: 0,
           comments_count: 0,
-        });
+        }).select('id').single();
         if (insertErr) throw new Error(insertErr.message);
+
+        // Insert tags
+        if (postData && taggedUsers.length > 0) {
+          const tagInserts = taggedUsers.map(t => ({ post_id: postData.id, tagged_user_id: t.id }));
+          await supabase.from('post_tags').insert(tagInserts);
+          // Notify tagged users
+          for (const t of taggedUsers) {
+            await supabase.from('notifications').insert({ user_id: t.id, actor_id: user.id, type: 'mention', post_id: postData.id });
+          }
+        }
 
         // Update posts_count
         const { data: profileData } = await supabase.from('profiles').select('posts_count').eq('id', user.id).single();
@@ -254,7 +296,7 @@ export default function CrearPage() {
                 {/* Visibility */}
                 <div>
                   <label className="block text-sm font-semibold text-brand-dark mb-1.5">Visibilidad</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {VISIBILITY.map(opt => {
                       const Icon = opt.icon;
                       const sel = visibility === opt.value;
@@ -277,6 +319,50 @@ export default function CrearPage() {
                     placeholder="Ubicación (opcional)" disabled={uploading}
                     className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-brand-dark placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-carnaval-red/20 disabled:opacity-50"
                   />
+                </div>
+
+                {/* Tagging */}
+                <div>
+                  <label className="block text-sm font-semibold text-brand-dark mb-1.5">
+                    <Tag className="w-4 h-4 inline mr-1" />
+                    Etiquetar personas <span className="text-gray-400 font-normal text-xs">(opcional)</span>
+                  </label>
+                  {/* Tagged users */}
+                  {taggedUsers.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {taggedUsers.map(t => (
+                        <span key={t.id} className="inline-flex items-center gap-1 bg-carnaval-blue/10 text-carnaval-blue text-xs font-medium px-2.5 py-1 rounded-full">
+                          @{t.username || t.full_name.split(' ')[0].toLowerCase()}
+                          <button onClick={() => removeTag(t.id)} className="hover:text-carnaval-red"><X className="w-3 h-3" /></button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                    <input
+                      type="text" value={tagSearch}
+                      onChange={e => { setTagSearch(e.target.value); searchUsersForTag(e.target.value); }}
+                      placeholder="Buscar usuario para etiquetar..." disabled={uploading}
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm text-brand-dark placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-carnaval-red/20 disabled:opacity-50"
+                    />
+                    {tagResults.length > 0 && (
+                      <div className="absolute z-20 mt-1 w-full bg-white rounded-xl shadow-lg border border-gray-100 max-h-48 overflow-y-auto">
+                        {tagResults.map(u => (
+                          <button key={u.id} onClick={() => addTag(u)}
+                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ background: 'linear-gradient(135deg, #E83331, #FFCE38, #00AB25)' }}>
+                              {(u.full_name || 'C').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                            </div>
+                            <div>
+                              <p className="text-brand-dark font-medium">{u.username ? `@${u.username}` : u.full_name.split(' ')[0]}</p>
+                              <p className="text-[11px] text-gray-400">{u.full_name}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             )}

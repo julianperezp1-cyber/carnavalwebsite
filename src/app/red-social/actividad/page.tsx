@@ -16,6 +16,7 @@ interface Notification {
   created_at: string;
   actor_name: string;
   actor_nickname: string | null;
+  actor_username: string | null;
   post_media_url: string | null;
 }
 
@@ -54,12 +55,13 @@ export default function ActividadPage() {
     // Get actor info
     const actorIds = [...new Set(notifs.map(n => n.actor_id))];
     const [profilesRes, contactsRes] = await Promise.all([
-      supabase.from('profiles').select('id, full_name').in('id', actorIds),
+      supabase.from('profiles').select('id, full_name, username').in('id', actorIds),
       supabase.from('contact_info').select('id, nickname').in('id', actorIds),
     ]);
 
     const nameMap: Record<string, string> = {};
-    profilesRes.data?.forEach(p => { nameMap[p.id] = p.full_name || 'Carnavalero'; });
+    const usernameMap: Record<string, string | null> = {};
+    profilesRes.data?.forEach(p => { nameMap[p.id] = p.full_name || 'Carnavalero'; usernameMap[p.id] = p.username || null; });
     const nickMap: Record<string, string | null> = {};
     contactsRes.data?.forEach(c => { nickMap[c.id] = c.nickname; });
 
@@ -84,6 +86,7 @@ export default function ActividadPage() {
       ...n,
       actor_name: nameMap[n.actor_id] || 'Carnavalero',
       actor_nickname: nickMap[n.actor_id] || null,
+      actor_username: usernameMap[n.actor_id] || null,
       post_media_url: n.post_id ? postMap[n.post_id] || null : null,
     })));
 
@@ -117,12 +120,13 @@ export default function ActividadPage() {
   };
 
   const getMessage = (n: Notification) => {
-    const name = <span className="font-semibold">{n.actor_nickname || n.actor_name.split(' ')[0]}</span>;
+    const displayName = n.actor_username ? `@${n.actor_username}` : (n.actor_nickname || n.actor_name.split(' ')[0]);
+    const name = <span className="font-semibold">{displayName}</span>;
     switch (n.type) {
       case 'like': return <>{name} le dio me gusta a tu publicación.</>;
       case 'comment': return <>{name} comentó: {n.content?.slice(0, 50)}</>;
       case 'follow': return <>{name} comenzó a seguirte.</>;
-      case 'mention': return <>{name} te mencionó en un comentario.</>;
+      case 'mention': return <>{name} te etiquetó en una publicación.</>;
       default: return <>{name} interactuó contigo.</>;
     }
   };

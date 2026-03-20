@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
 import {
   Heart, MessageCircle, Send, Bookmark, MoreHorizontal,
-  Flag, Link2, Trash2, MapPin, Loader2,
+  Flag, Link2, Trash2, MapPin, Loader2, Tag, Users,
 } from 'lucide-react';
 
 interface PostData {
@@ -70,9 +70,13 @@ export default function PostDetailPage() {
   const { user, loading: authLoading } = useAuth();
 
   const [post, setPost] = useState<PostData | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [authorName, setAuthorName] = useState('Carnavalero');
   const [authorNickname, setAuthorNickname] = useState<string | null>(null);
-  const [comments, setComments] = useState<(CommentData & { author_name: string; author_nickname: string | null })[]>([]);
+  const [authorUsername, setAuthorUsername] = useState<string | null>(null);
+  const [taggedUsers, setTaggedUsers] = useState<{ id: string; full_name: string; username: string | null }[]>([]);
+  const [comments, setComments] = useState<(CommentData & { author_name: string; author_nickname: string | null; author_username: string | null })[]>([]);
+  const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
@@ -83,9 +87,9 @@ export default function PostDetailPage() {
 
   const commentInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
 
   const fetchPost = useCallback(async () => {
+    const supabase = createClient();
     const { data: postData, error } = await supabase
       .from('posts')
       .select('*')
@@ -97,21 +101,61 @@ export default function PostDetailPage() {
       return;
     }
 
+    // Visibility access check
+    if (postData.visibility === 'private' && postData.user_id !== user?.id) {
+      setAccessDenied(true);
+      setLoading(false);
+      return;
+    }
+    if (postData.visibility === 'close_friends' && postData.user_id !== user?.id) {
+      if (!user) { setAccessDenied(true); setLoading(false); return; }
+      const { data: conn } = await supabase
+        .from('connections')
+        .select('status')
+        .or(`and(requester_id.eq.${user.id},receiver_id.eq.${postData.user_id}),and(requester_id.eq.${postData.user_id},receiver_id.eq.${user.id})`)
+        .eq('status', 'accepted')
+        .maybeSingle();
+      if (!conn) { setAccessDenied(true); setLoading(false); return; }
+    }
+
     setPost(postData);
     setLikesCount(postData.likes_count ?? 0);
 
     // Fetch author info
     const [profileRes, contactRes] = await Promise.all([
-      supabase.from('profiles').select('full_name').eq('id', postData.user_id).single(),
+      supabase.from('profiles').select('full_name, username').eq('id', postData.user_id).single(),
       supabase.from('contact_info').select('nickname').eq('id', postData.user_id).maybeSingle(),
     ]);
 
     setAuthorName(profileRes.data?.full_name || 'Carnavalero');
     setAuthorNickname(contactRes.data?.nickname || null);
+    setAuthorUsername(profileRes.data?.username || null);
+
+    // Fetch tagged users
+    const { data: tags } = await supabase
+      .from('post_tags')
+      .select('tagged_user_id')
+      .eq('post_id', postId);
+    if (tags && tags.length > 0) {
+      const taggedIds = tags.map(t => t.tagged_user_id);
+      const { data: taggedProfiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, username')
+        .in('id', taggedIds);
+      setTaggedUsers(taggedProfiles || []);
+    }
+
+    // Check saved status
+    if (user) {
+      const { data: savedData } = await supabase.from('saved_posts').select('id').eq('post_id', postId).eq('user_id', user.id).maybeSingle();
+      setSaved(!!savedData);
+    }
+
     setLoading(false);
-  }, [postId]);
+  }, [postId, user]);
 
   const fetchComments = useCallback(async () => {
+    const supabase = createClient();
     const { data: commentsData } = await supabase
       .from('post_comments')
       .select('*')
@@ -125,12 +169,13 @@ export default function PostDetailPage() {
 
     const userIds = [...new Set(commentsData.map(c => c.user_id))];
     const [profilesRes, contactsRes] = await Promise.all([
-      supabase.from('profiles').select('id, full_name').in('id', userIds),
+      supabase.from('profiles').select('id, full_name, username').in('id', userIds),
       supabase.from('contact_info').select('id, nickname').in('id', userIds),
     ]);
 
     const profileMap: Record<string, string> = {};
-    profilesRes.data?.forEach(p => { profileMap[p.id] = p.full_name || 'Carnavalero'; });
+    const usernameMap: Record<string, string | null> = {};
+    profilesRes.data?.forEach(p => { profileMap[p.id] = p.full_name || 'Carnavalero'; usernameMap[p.id] = p.username || null; });
     const contactMap: Record<string, string | null> = {};
     contactsRes.data?.forEach(c => { contactMap[c.id] = c.nickname; });
 
@@ -138,11 +183,13 @@ export default function PostDetailPage() {
       ...c,
       author_name: profileMap[c.user_id] || 'Carnavalero',
       author_nickname: contactMap[c.user_id] || null,
+      author_username: usernameMap[c.user_id] || null,
     })));
   }, [postId]);
 
   const checkLiked = useCallback(async () => {
     if (!user) return;
+    const supabase = createClient();
     const { data } = await supabase
       .from('post_likes')
       .select('id')
@@ -166,6 +213,7 @@ export default function PostDetailPage() {
 
   const toggleLike = async () => {
     if (!user) return;
+    const supabase = createClient();
     if (liked) {
       setLiked(false);
       setLikesCount(c => Math.max(0, c - 1));
@@ -174,12 +222,29 @@ export default function PostDetailPage() {
       setLiked(true);
       setLikesCount(c => c + 1);
       await supabase.from('post_likes').insert({ post_id: postId, user_id: user.id });
+      // Create notification for post author
+      if (post && post.user_id !== user.id) {
+        await supabase.from('notifications').insert({ user_id: post.user_id, actor_id: user.id, type: 'like', post_id: postId });
+      }
+    }
+  };
+
+  const toggleSave = async () => {
+    if (!user) return;
+    const supabase = createClient();
+    if (saved) {
+      setSaved(false);
+      await supabase.from('saved_posts').delete().eq('post_id', postId).eq('user_id', user.id);
+    } else {
+      setSaved(true);
+      await supabase.from('saved_posts').insert({ post_id: postId, user_id: user.id });
     }
   };
 
   const addComment = async () => {
     if (!user || !commentText.trim() || submittingComment) return;
     setSubmittingComment(true);
+    const supabase = createClient();
     const content = commentText.trim();
     setCommentText('');
 
@@ -192,9 +257,14 @@ export default function PostDetailPage() {
       created_at: new Date().toISOString(),
       author_name: user.user_metadata?.full_name || 'Tú',
       author_nickname: null,
+      author_username: null,
     }]);
 
     await supabase.from('post_comments').insert({ post_id: postId, user_id: user.id, content });
+    // Create notification for post author
+    if (post && post.user_id !== user.id) {
+      await supabase.from('notifications').insert({ user_id: post.user_id, actor_id: user.id, type: 'comment', post_id: postId, content });
+    }
     fetchComments();
     setSubmittingComment(false);
   };
@@ -202,12 +272,18 @@ export default function PostDetailPage() {
   const deletePost = async () => {
     if (!user || !post || post.user_id !== user.id) return;
     if (!confirm('¿Eliminar esta publicación?')) return;
+    const supabase = createClient();
     await supabase.from('posts').delete().eq('id', postId);
+    // Decrement posts_count
+    const { data: profileData } = await supabase.from('profiles').select('posts_count').eq('id', user.id).single();
+    if (profileData) {
+      await supabase.from('profiles').update({ posts_count: Math.max(0, (profileData.posts_count || 1) - 1) }).eq('id', user.id);
+    }
     router.push('/red-social');
   };
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(`${window.location.origin}/red-social/post/${postId}`);
+    try { await navigator.clipboard.writeText(`${window.location.origin}/red-social/post/${postId}`); } catch {};
     setCopiedLink(true);
     setMenuOpen(false);
     setTimeout(() => setCopiedLink(false), 2000);
@@ -217,6 +293,17 @@ export default function PostDetailPage() {
     return (
       <div className="min-h-full bg-white flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 text-carnaval-red animate-spin" />
+      </div>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="min-h-full bg-white flex flex-col items-center justify-center gap-4 py-20 px-6">
+        <Users className="w-12 h-12 text-gray-300" />
+        <p className="text-gray-500 text-lg text-center">Esta publicación es privada</p>
+        <p className="text-gray-400 text-sm text-center">Solo los amigos carnavaleros pueden ver este contenido</p>
+        <button onClick={() => router.push('/red-social')} className="text-carnaval-red hover:underline text-sm">← Volver al feed</button>
       </div>
     );
   }
@@ -232,7 +319,7 @@ export default function PostDetailPage() {
     );
   }
 
-  const displayAuthor = authorNickname || authorName.split(' ')[0];
+  const displayAuthor = authorUsername ? `@${authorUsername}` : (authorNickname || authorName.split(' ')[0]);
   const isOwner = user?.id === post.user_id;
 
   return (
@@ -247,7 +334,7 @@ export default function PostDetailPage() {
       <div className="max-w-2xl mx-auto">
         {/* ═══ POST HEADER ═══ */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-          <Link href={`/carnavalero/${post.user_id}`}>
+          <Link href={`/red-social/perfil/${post.user_id}`}>
             <div className="w-9 h-9 rounded-full p-[2px]" style={{ background: 'linear-gradient(135deg, #E83331, #FFCE38, #00AB25)' }}>
               <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
                 <span className="text-[11px] font-bold text-brand-dark">{getInitials(authorName)}</span>
@@ -255,7 +342,7 @@ export default function PostDetailPage() {
             </div>
           </Link>
           <div className="flex-1 min-w-0">
-            <Link href={`/carnavalero/${post.user_id}`} className="text-[13px] font-semibold text-brand-dark hover:underline block truncate">
+            <Link href={`/red-social/perfil/${post.user_id}`} className="text-[13px] font-semibold text-brand-dark hover:underline block truncate">
               {displayAuthor}
             </Link>
             {post.category && <span className="text-[11px] text-gray-400">{post.category}</span>}
@@ -315,7 +402,9 @@ export default function PostDetailPage() {
               <Send className="w-6 h-6" />
             </button>
           </div>
-          <Bookmark className="w-6 h-6 text-brand-dark hover:text-gray-500 cursor-pointer transition" />
+          <button onClick={toggleSave} className="active:scale-90 transition-transform">
+            <Bookmark className={`w-6 h-6 transition ${saved ? 'text-brand-dark fill-brand-dark' : 'text-brand-dark'}`} />
+          </button>
         </div>
 
         {/* ═══ LIKES ═══ */}
@@ -329,7 +418,7 @@ export default function PostDetailPage() {
         {post.caption && (
           <div className="px-4 pb-2">
             <p className="text-[13px] text-brand-dark leading-relaxed">
-              <Link href={`/carnavalero/${post.user_id}`} className="font-semibold mr-1 hover:underline">{displayAuthor}</Link>
+              <Link href={`/red-social/perfil/${post.user_id}`} className="font-semibold mr-1 hover:underline">{displayAuthor}</Link>
               {post.caption}
             </p>
           </div>
@@ -340,6 +429,30 @@ export default function PostDetailPage() {
           <div className="px-4 pb-2">
             <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-carnaval-red/10 text-carnaval-red">
               {post.category}
+            </span>
+          </div>
+        )}
+
+        {/* ═══ TAGGED USERS ═══ */}
+        {taggedUsers.length > 0 && (
+          <div className="px-4 pb-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Tag className="w-3.5 h-3.5 text-gray-400" />
+              {taggedUsers.map(t => (
+                <Link key={t.id} href={`/red-social/perfil/${t.id}`}
+                  className="text-xs font-medium text-carnaval-blue hover:underline">
+                  {t.username ? `@${t.username}` : t.full_name.split(' ')[0]}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ VISIBILITY BADGE ═══ */}
+        {post.visibility === 'close_friends' && (
+          <div className="px-4 pb-2">
+            <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-carnaval-green/10 text-carnaval-green">
+              <Users className="w-3 h-3" /> Solo amigos carnavaleros
             </span>
           </div>
         )}
@@ -362,13 +475,13 @@ export default function PostDetailPage() {
           <div className="space-y-4">
             {comments.map(comment => (
               <div key={comment.id} className="flex gap-3">
-                <Link href={`/carnavalero/${comment.user_id}`}>
+                <Link href={`/red-social/perfil/${comment.user_id}`}>
                   <Avatar name={comment.author_name} size={28} />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <p className="text-brand-dark text-[13px] leading-relaxed">
-                    <Link href={`/carnavalero/${comment.user_id}`} className="font-semibold mr-1 hover:underline">
-                      {comment.author_nickname || comment.author_name.split(' ')[0]}
+                    <Link href={`/red-social/perfil/${comment.user_id}`} className="font-semibold mr-1 hover:underline">
+                      {comment.author_username ? `@${comment.author_username}` : (comment.author_nickname || comment.author_name.split(' ')[0])}
                     </Link>
                     {comment.content}
                   </p>

@@ -36,18 +36,41 @@ export default function UserProfilePage() {
   const fetchProfile = useCallback(async () => {
     const supabase = createClient();
 
-    const [profileRes, contactRes, postsRes, followersRes, followingRes, friendsRes] = await Promise.all([
-      supabase.from('profiles').select('full_name, bio, city, country, email, phone, created_at').eq('id', userId).single(),
+    const [profileRes, contactRes, followersRes, followingRes, friendsRes] = await Promise.all([
+      supabase.from('profiles').select('full_name, bio, username, city, country, email, phone, created_at').eq('id', userId).single(),
       supabase.from('contact_info').select('*').eq('id', userId).maybeSingle(),
-      supabase.from('posts').select('id, media_url, media_type, likes_count, comments_count').eq('user_id', userId).in('visibility', ['public']).order('created_at', { ascending: false }),
       supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', userId),
       supabase.from('follows').select('id', { count: 'exact', head: true }).eq('follower_id', userId),
       supabase.from('connections').select('id', { count: 'exact', head: true }).or(`requester_id.eq.${userId},receiver_id.eq.${userId}`).eq('status', 'accepted'),
     ]);
 
+    // Check friend status first to determine which posts to show
+    let isFriendWithUser = false;
+    if (user) {
+      const { data: connData } = await supabase
+        .from('connections')
+        .select('status')
+        .or(`and(requester_id.eq.${user.id},receiver_id.eq.${userId}),and(requester_id.eq.${userId},receiver_id.eq.${user.id})`)
+        .maybeSingle();
+      if (connData?.status === 'accepted') isFriendWithUser = true;
+      if (connData) setFriendStatus(connData.status === 'accepted' ? 'accepted' : 'pending');
+    }
+
+    // Fetch posts: public always, + followers-only if following, + close_friends if friends
+    const isFollowingUser = user ? !!(await supabase.from('follows').select('id').eq('follower_id', user.id).eq('following_id', userId).maybeSingle()).data : false;
+    const visibilities = ['public'];
+    if (isFollowingUser) visibilities.push('friends');
+    if (isFriendWithUser) visibilities.push('close_friends');
+    const { data: postsData } = await supabase
+      .from('posts')
+      .select('id, media_url, media_type, likes_count, comments_count, visibility')
+      .eq('user_id', userId)
+      .in('visibility', visibilities)
+      .order('created_at', { ascending: false });
+
     setProfile(profileRes.data);
     setContactInfo(contactRes.data);
-    setPosts(postsRes.data || []);
+    setPosts(postsData || []);
     setFollowersCount(followersRes.count || 0);
     setFollowingCount(followingRes.count || 0);
     setFriendsCount(friendsRes.count || 0);
@@ -56,14 +79,6 @@ export default function UserProfilePage() {
       // Check follow status
       const { data: followData } = await supabase.from('follows').select('id').eq('follower_id', user.id).eq('following_id', userId).maybeSingle();
       setIsFollowing(!!followData);
-
-      // Check friend status (connections)
-      const { data: connData } = await supabase
-        .from('connections')
-        .select('status')
-        .or(`and(requester_id.eq.${user.id},receiver_id.eq.${userId}),and(requester_id.eq.${userId},receiver_id.eq.${user.id})`)
-        .maybeSingle();
-      if (connData) setFriendStatus(connData.status === 'accepted' ? 'accepted' : 'pending');
     }
 
     setLoading(false);
@@ -91,7 +106,11 @@ export default function UserProfilePage() {
     setSendingFriend(true);
     const supabase = createClient();
     const { error } = await supabase.from('connections').insert({ requester_id: user.id, receiver_id: userId });
-    if (!error) setFriendStatus('pending');
+    if (!error) {
+      setFriendStatus('pending');
+      // Notify the receiver about the friend request
+      await supabase.from('notifications').insert({ user_id: userId, actor_id: user.id, type: 'follow', content: 'solicitud de amistad' });
+    }
     setSendingFriend(false);
   };
 
@@ -109,7 +128,7 @@ export default function UserProfilePage() {
   }
 
   const nickname = contactInfo?.nickname;
-  const displayName = nickname || profile.full_name?.split(' ')[0]?.toLowerCase() || 'carnavalero';
+  const displayName = profile.username ? `@${profile.username}` : (nickname || profile.full_name?.split(' ')[0]?.toLowerCase() || 'carnavalero');
   const isFriend = friendStatus === 'accepted';
   const currentPosts = activeTab === 'reels' ? posts.filter((p: any) => p.media_type === 'video') : posts;
 
@@ -148,6 +167,7 @@ export default function UserProfilePage() {
         {/* Name + Bio + Slogan */}
         <div className="mb-3">
           <p className="text-[13px] font-semibold text-brand-dark">{profile.full_name}</p>
+          {nickname && profile.username && <p className="text-[12px] text-gray-500">~ {nickname}</p>}
           {contactInfo?.slogan && <p className="text-[13px] text-gray-500 italic mt-0.5">"{contactInfo.slogan}"</p>}
           {profile.bio && <p className="text-[13px] text-brand-dark mt-0.5">{profile.bio}</p>}
           {profile.city && <p className="text-[13px] text-gray-400 mt-0.5">📍 {profile.city}{profile.country === 'CO' ? ', Colombia' : ''}</p>}
@@ -223,6 +243,7 @@ export default function UserProfilePage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={post.media_url} alt="" className="w-full h-full object-cover" loading="lazy" />
                 {post.media_type === 'video' && <div className="absolute top-1.5 right-1.5"><Film className="w-4 h-4 text-white drop-shadow" /></div>}
+                {post.visibility === 'close_friends' && <div className="absolute top-1.5 left-1.5"><Heart className="w-4 h-4 text-carnaval-green fill-carnaval-green drop-shadow" /></div>}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <div className="flex items-center gap-3 text-white font-semibold text-xs">
                     <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5" fill="white" /> {post.likes_count}</span>

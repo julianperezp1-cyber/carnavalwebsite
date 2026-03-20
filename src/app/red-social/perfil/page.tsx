@@ -10,6 +10,7 @@ interface ProfileData {
   full_name: string;
   bio: string | null;
   nickname: string | null;
+  username: string | null;
   followers_count: number;
   following_count: number;
   posts_count: number;
@@ -37,7 +38,7 @@ export default function MyProfilePage() {
     const supabase = createClient();
 
     const [profileRes, contactRes, postsRes, savedRes, followersRes, followingRes] = await Promise.all([
-      supabase.from('profiles').select('full_name, bio, followers_count, following_count, posts_count').eq('id', user.id).single(),
+      supabase.from('profiles').select('full_name, bio, username, followers_count, following_count, posts_count').eq('id', user.id).single(),
       supabase.from('contact_info').select('nickname').eq('id', user.id).maybeSingle(),
       supabase.from('posts').select('id, media_url, media_type, likes_count, comments_count').eq('user_id', user.id).order('created_at', { ascending: false }),
       supabase.from('saved_posts').select('post_id, posts(id, media_url, media_type, likes_count, comments_count)').eq('user_id', user.id).order('created_at', { ascending: false }),
@@ -49,6 +50,7 @@ export default function MyProfilePage() {
       setProfile({
         ...profileRes.data,
         nickname: contactRes.data?.nickname || null,
+        username: profileRes.data?.username || null,
         followers_count: followersRes.count || 0,
         following_count: followingRes.count || 0,
         posts_count: postsRes.data?.length || 0,
@@ -80,7 +82,7 @@ export default function MyProfilePage() {
     );
   }
 
-  const displayName = nickname || profile.full_name.split(' ')[0].toLowerCase();
+  const displayName = profile.username ? `@${profile.username}` : (nickname || profile.full_name.split(' ')[0].toLowerCase());
   const currentPosts = activeTab === 'saved' ? savedPosts : activeTab === 'reels' ? posts.filter(p => p.media_type === 'video') : posts;
 
   return (
@@ -132,6 +134,7 @@ export default function MyProfilePage() {
         {/* Name + Bio */}
         <div className="mb-4">
           <p className="text-[13px] font-semibold text-brand-dark">{profile.full_name}</p>
+          {profile.nickname && profile.username && <p className="text-[12px] text-gray-500">~ {profile.nickname}</p>}
           {profile.bio && <p className="text-[13px] text-brand-dark mt-0.5">{profile.bio}</p>}
           <p className="text-[13px] text-carnaval-blue mt-0.5">🎭 Carnavalero</p>
         </div>

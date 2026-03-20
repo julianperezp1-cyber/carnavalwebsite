@@ -23,11 +23,13 @@ interface PostWithAuthor {
   media_type: 'image' | 'video';
   thumbnail_url: string | null;
   category: string | null;
+  visibility: string;
   likes_count: number;
   comments_count: number;
   created_at: string;
   author_name: string;
   author_nickname: string | null;
+  author_username: string | null;
   is_liked: boolean;
   is_saved: boolean;
 }
@@ -36,6 +38,7 @@ interface SuggestedUser {
   id: string;
   full_name: string;
   nickname: string | null;
+  username: string | null;
   posts_count: number;
 }
 
@@ -157,7 +160,7 @@ export default function HomePage() {
     // Get users not yet followed, with posts
     const { data: users } = await supabase
       .from('profiles')
-      .select('id, full_name, posts_count')
+      .select('id, full_name, username, posts_count')
       .gt('posts_count', 0)
       .order('posts_count', { ascending: false })
       .limit(20);
@@ -178,6 +181,7 @@ export default function HomePage() {
       id: u.id,
       full_name: u.full_name || 'Carnavalero',
       nickname: nickMap[u.id] || null,
+      username: u.username || null,
       posts_count: u.posts_count || 0,
     })));
   }, [user]);
@@ -203,7 +207,7 @@ export default function HomePage() {
       .from('posts')
       .select('*')
       .in('user_id', feedIds)
-      .in('visibility', ['public', 'friends'])
+      .in('visibility', ['public', 'friends', 'close_friends'])
       .order('created_at', { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
@@ -220,26 +224,46 @@ export default function HomePage() {
     const { data: postsData } = await query;
     if (!postsData) { setLoading(false); setLoadingMore(false); return; }
 
-    // Enrich with author info
+    // Enrich with author info (including username)
     const userIds = [...new Set(postsData.map(p => p.user_id))];
     const [profilesRes, contactRes, likesRes, savesRes] = await Promise.all([
-      supabase.from('profiles').select('id, full_name').in('id', userIds),
+      supabase.from('profiles').select('id, full_name, username').in('id', userIds),
       supabase.from('contact_info').select('id, nickname').in('id', userIds),
       supabase.from('post_likes').select('post_id').eq('user_id', user.id).in('post_id', postsData.map(p => p.id)),
       supabase.from('saved_posts').select('post_id').eq('user_id', user.id).in('post_id', postsData.map(p => p.id)),
     ]);
 
     const nameMap: Record<string, string> = {};
-    profilesRes.data?.forEach(p => { nameMap[p.id] = p.full_name || 'Carnavalero'; });
+    const usernameMap: Record<string, string | null> = {};
+    profilesRes.data?.forEach(p => { nameMap[p.id] = p.full_name || 'Carnavalero'; usernameMap[p.id] = p.username || null; });
     const nickMap: Record<string, string | null> = {};
     contactRes.data?.forEach(c => { nickMap[c.id] = c.nickname; });
     const likedSet = new Set(likesRes.data?.map(l => l.post_id) || []);
     const savedSet = new Set(savesRes.data?.map(s => s.post_id) || []);
 
-    const enriched: PostWithAuthor[] = postsData.map(p => ({
+    // Filter close_friends posts: only show if author is a friend (connection accepted)
+    let friendIds = new Set<string>();
+    const closeFriendsPosts = postsData.filter(p => p.visibility === 'close_friends');
+    if (closeFriendsPosts.length > 0) {
+      const closeFriendAuthorIds = [...new Set(closeFriendsPosts.map(p => p.user_id))];
+      const { data: connections } = await supabase
+        .from('connections')
+        .select('requester_id, receiver_id')
+        .eq('status', 'accepted')
+        .or(closeFriendAuthorIds.map(id => `and(requester_id.eq.${user.id},receiver_id.eq.${id}),and(requester_id.eq.${id},receiver_id.eq.${user.id})`).join(','));
+      connections?.forEach(c => { friendIds.add(c.requester_id === user.id ? c.receiver_id : c.requester_id); });
+    }
+
+    const filteredPosts = postsData.filter(p => {
+      if (p.visibility === 'close_friends') return p.user_id === user.id || friendIds.has(p.user_id);
+      return true;
+    });
+
+    const enriched: PostWithAuthor[] = filteredPosts.map(p => ({
       ...p,
       author_name: nameMap[p.user_id] || 'Carnavalero',
       author_nickname: nickMap[p.user_id] || null,
+      author_username: usernameMap[p.user_id] || null,
       is_liked: likedSet.has(p.id),
       is_saved: savedSet.has(p.id),
     }));
@@ -325,7 +349,7 @@ export default function HomePage() {
     fetchStories();
   };
 
-  const dn = (p: PostWithAuthor) => p.author_nickname || p.author_name.split(' ')[0];
+  const dn = (p: PostWithAuthor) => p.author_username ? `@${p.author_username}` : (p.author_nickname || p.author_name.split(' ')[0]);
 
   return (
     <div className="min-h-full bg-white">
@@ -415,8 +439,9 @@ export default function HomePage() {
                         <div className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold text-white mb-2" style={{ background: 'linear-gradient(135deg, #E83331, #FFCE38, #00AB25)' }}>
                           {initials(u.full_name)}
                         </div>
-                        <p className="text-[13px] font-semibold text-brand-dark truncate w-full">{u.nickname || u.full_name.split(' ')[0]}</p>
-                        <p className="text-[11px] text-gray-400 mb-3">{u.posts_count} publicaciones</p>
+                        <p className="text-[13px] font-semibold text-brand-dark truncate w-full">{u.username ? `@${u.username}` : (u.nickname || u.full_name.split(' ')[0])}</p>
+                        <p className="text-[11px] text-gray-400">{u.nickname && u.username ? u.full_name.split(' ')[0] : ''}</p>
+                        <p className="text-[11px] text-gray-400 mb-2">{u.posts_count} publicaciones</p>
                         <button
                           onClick={() => followUser(u.id)}
                           className="w-full py-1.5 bg-carnaval-blue text-white text-xs font-semibold rounded-lg hover:bg-carnaval-blue/90 transition-colors"

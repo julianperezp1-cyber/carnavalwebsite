@@ -30,7 +30,7 @@ export default function ExplorarPage() {
   const [activeCategory, setActiveCategory] = useState('🔥 Tendencia');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
-  const [searchResults, setSearchResults] = useState<{ id: string; full_name: string; nickname: string | null; posts_count: number }[]>([]);
+  const [searchResults, setSearchResults] = useState<{ id: string; full_name: string; nickname: string | null; username: string | null; posts_count: number }[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef(0);
 
@@ -85,8 +85,8 @@ export default function ExplorarPage() {
       const supabase = createClient();
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, posts_count')
-        .ilike('full_name', `%${searchQuery.trim()}%`)
+        .select('id, full_name, username, posts_count')
+        .or(`full_name.ilike.%${searchQuery.trim()}%,username.ilike.%${searchQuery.trim()}%`)
         .limit(8);
 
       if (!profiles) return;
@@ -95,7 +95,7 @@ export default function ExplorarPage() {
       const nickMap: Record<string, string | null> = {};
       contacts?.forEach(c => { nickMap[c.id] = c.nickname; });
 
-      setSearchResults(profiles.map(p => ({ ...p, full_name: p.full_name || 'Carnavalero', nickname: nickMap[p.id] || null, posts_count: p.posts_count || 0 })));
+      setSearchResults(profiles.map(p => ({ ...p, full_name: p.full_name || 'Carnavalero', nickname: nickMap[p.id] || null, username: p.username || null, posts_count: p.posts_count || 0 })));
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -135,7 +135,7 @@ export default function ExplorarPage() {
                   {(u.full_name || 'C').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
                 </div>
                 <div>
-                  <p className="text-[13px] font-semibold text-brand-dark">{u.nickname || u.full_name.split(' ')[0]}</p>
+                  <p className="text-[13px] font-semibold text-brand-dark">{u.username ? `@${u.username}` : (u.nickname || u.full_name.split(' ')[0])}</p>
                   <p className="text-[11px] text-gray-400">{u.full_name} · {u.posts_count} publicaciones</p>
                 </div>
               </Link>

@@ -233,6 +233,9 @@ export default function CompletarPerfilPage() {
   const [step, setStep] = useState(1); // 1: basic, 2: carnaval, 3: travel planning, 4: done
 
   // Step 1: Basic info
+  const [username, setUsername] = useState('');
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const [phoneCode, setPhoneCode] = useState('+57');
   const [phone, setPhone] = useState('');
   const [country, setCountry] = useState('Colombia');
@@ -274,6 +277,23 @@ export default function CompletarPerfilPage() {
     });
   }, []);
 
+  // Check username availability
+  useEffect(() => {
+    if (!username.trim() || username.length < 3) { setUsernameAvailable(null); return; }
+    const timer = setTimeout(async () => {
+      setCheckingUsername(true);
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username.trim().toLowerCase())
+        .neq('id', user?.id || '')
+        .maybeSingle();
+      setUsernameAvailable(!data);
+      setCheckingUsername(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [username, user]);
+
   const selectedPhoneCode = PHONE_CODES.find(p => p.code === phoneCode);
   const isColombian = country === 'Colombia';
 
@@ -314,7 +334,7 @@ export default function CompletarPerfilPage() {
 
     await supabase.auth.updateUser({ data: profileData });
 
-    await supabase.from('profiles').upsert({
+    const upsertData: any = {
       id: user.id,
       email: user.email,
       full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
@@ -322,7 +342,9 @@ export default function CompletarPerfilPage() {
       country,
       city,
       accept_marketing: acceptMarketing,
-    });
+    };
+    if (username.trim()) upsertData.username = username.trim().toLowerCase();
+    await supabase.from('profiles').upsert(upsertData);
 
     setSaving(false);
   }
@@ -344,7 +366,7 @@ export default function CompletarPerfilPage() {
       },
     });
     if (user) {
-      await supabase.from('profiles').upsert({
+      const upsertData: any = {
         id: user.id,
         email: user.email,
         full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
@@ -352,7 +374,9 @@ export default function CompletarPerfilPage() {
         country,
         city,
         accept_marketing: acceptMarketing,
-      });
+      };
+      if (username.trim()) upsertData.username = username.trim().toLowerCase();
+      await supabase.from('profiles').upsert(upsertData);
     }
     setSaving(false);
     setStep(2);
@@ -462,6 +486,30 @@ export default function CompletarPerfilPage() {
                   <h2 className="text-lg font-display font-black text-brand-dark">Datos basicos</h2>
                   <p className="text-xs text-gray-400">Informacion para personalizar tu experiencia</p>
                 </div>
+              </div>
+
+              {/* Username (unique handle) */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Nombre de usuario <span className="text-gray-400 font-normal">(como Instagram)</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">@</span>
+                  <input type="text" value={username}
+                    onChange={e => setUsername(e.target.value.replace(/[^a-zA-Z0-9._]/g, '').toLowerCase())}
+                    placeholder="tu_usuario" maxLength={30}
+                    className={`w-full pl-8 pr-10 py-2.5 rounded-xl border text-sm focus:ring-2 focus:ring-carnaval-red/30 outline-none ${
+                      usernameAvailable === true ? 'border-carnaval-green focus:border-carnaval-green' :
+                      usernameAvailable === false ? 'border-carnaval-red focus:border-carnaval-red' :
+                      'border-gray-200 focus:border-carnaval-red'
+                    }`} />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {checkingUsername && <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />}
+                    {!checkingUsername && usernameAvailable === true && <CheckCircle className="w-4 h-4 text-carnaval-green" />}
+                    {!checkingUsername && usernameAvailable === false && <span className="text-carnaval-red text-xs font-medium">Ocupado</span>}
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1">Solo letras, numeros, puntos y guion bajo. Minimo 3 caracteres. Este sera tu identificador unico.</p>
               </div>
 
               {/* Phone with code dropdown */}
